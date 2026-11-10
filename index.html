@@ -429,6 +429,68 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
   .fly-ghost { display: none !important; }
 }
 
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--tabbar-h) + 108px);
+  transform: translateX(-50%) translateY(10px);
+  z-index: 48;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  box-shadow: 0 8px 22px rgba(59,107,18,.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+  white-space: nowrap;
+  max-width: calc(100% - 32px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast[hidden] { display: none !important; }
+.basket-meta { margin: 0 0 10px; font-size: 14px; line-height: 1.45; }
+.basket-meta b { font-family: var(--display); font-size: 1.05rem; }
+.basket-list { list-style: none; margin: 0; padding: 0; max-height: 38vh; overflow: auto; }
+.basket-row {
+  display: flex; align-items: center; gap: 10px;
+  border-top: 1px solid var(--line);
+  padding: 11px 0;
+}
+.basket-row:first-child { border-top: 0; }
+.basket-row .row-text { flex: 1; min-width: 0; }
+.basket-row b { display: block; font-family: var(--display); font-size: 1.15rem; letter-spacing: -.03em; }
+.basket-row .row-sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.row-remove {
+  flex: 0 0 32px; width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--paper);
+  color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer;
+  display: grid; place-items: center; padding: 0;
+}
+.row-remove:hover { border-color: var(--busy); color: var(--busy); }
+.seats-hint {
+  background: #FDE8D0;
+  color: #6B3B12;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 10px 0 0;
+  font-weight: 600;
+}
+.recap-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.recap-list li { font-size: 14px; color: var(--ink); padding: 3px 0; }
+.recap-list li span { color: var(--muted); }
+.legend .l-small { display: none; }
+.fab-go:disabled { opacity: .4; cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: none; }
+}
+
   </style>
 </head>
 <body>
@@ -639,7 +701,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
   <text x="918" y="230" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.2" fill="#5C4C3A">COCINA</text>
 </svg>
     </div>
-    <p class="hint-card" data-i18n="mapCartHint">Toca una mesa libre: se añadirá a Mi reserva.</p>
+    <p class="hint-card" data-i18n="mapCartHint">Toca mesas libres para añadirlas a Mi reserva. Vuelve a tocar para quitarlas.</p>
     <p class="footer-note">Vellia Cafeteria · Torrevieja</p>
   </main>
 
@@ -741,16 +803,13 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <button type="button" class="fab-go" id="basket-go" data-i18n="continueBtn">Continuar</button>
   </div>
   <div class="sr-live" id="basket-live" aria-live="polite"></div>
+  <div class="toast" id="toast" hidden role="status"></div>
 
   <div id="basket-modal" class="modal" hidden>
     <div class="sheet" role="dialog" aria-labelledby="basket-title">
       <h2 id="basket-title" class="serif" style="margin:0 0 8px;font-size:1.6rem;" data-i18n="myBooking">Mi reserva</h2>
       <div id="basket-sheet-body"></div>
-      <div class="sheet-actions">
-        <button class="btn ghost" type="button" id="basket-remove" data-i18n="removeTable">Quitar</button>
-        <button class="btn ghost" type="button" id="basket-change" data-i18n="changeTable">Cambiar mesa</button>
-      </div>
-      <button class="btn" type="button" id="basket-continue" style="margin-top:10px;" data-i18n="continueBtn">Continuar</button>
+      <button class="btn" type="button" id="basket-continue" style="margin-top:12px;" data-i18n="continueBtn">Continuar</button>
       <button class="btn ghost" type="button" id="basket-close" style="margin-top:8px;" data-i18n="closeBasket">Cerrar</button>
     </div>
   </div>
@@ -924,7 +983,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       removeTable: 'Quitar',
       changeTable: 'Cambiar mesa',
       basketEmpty: 'Aún no has elegido una mesa. Tócala en el plano.',
-      mapCartHint: 'Toca una mesa libre: se añadirá a Mi reserva.',
+      mapCartHint: 'Toca mesas libres para añadirlas a Mi reserva. Vuelve a tocar para quitarlas.',
       note: 'Nota (opcional)',
       privacy: 'Acepto la política de privacidad y el uso de mis datos para gestionar esta reserva.',
       needPrivacy: 'Debes aceptar la política de privacidad.',
@@ -935,7 +994,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       newBooking: 'Nueva reserva',
       addedLive: 'Mesa {id} añadida a tu reserva.',
       seatsN: '{n} plazas',
-      closeBasket: 'Cerrar'
+      closeBasket: 'Cerrar',
+      addedToast: 'Mesa {id} añadida',
+      removedToast: 'Mesa {id} eliminada',
+      tablesN: '{n} mesas',
+      tables1: '1 mesa',
+      seatsMax: '{n} personas máx',
+      totalSeats: 'Plazas en total: {n}',
+      needMoreSeats: 'Hay {seats} plazas y {guests}. Añade otra mesa para continuar.',
+      droppedTables: 'Se han quitado las mesas no disponibles: {ids}.',
+      bookedBodyMulti: 'Mesas {ids}, {date} a las {slot}, {guests}. En la versión final recibirá un correo con Apple Wallet y Google Wallet.'
     },
     en: {
       tagline: 'Torrevieja',
@@ -1020,7 +1088,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       removeTable: 'Remove',
       changeTable: 'Change table',
       basketEmpty: 'You have not chosen a table yet. Tap one on the plan.',
-      mapCartHint: 'Tap a free table to add it to My booking.',
+      mapCartHint: 'Tap free tables to add them to My booking. Tap again to remove them.',
       note: 'Note (optional)',
       privacy: 'I accept the privacy policy and the use of my data to manage this booking.',
       needPrivacy: 'Please accept the privacy policy.',
@@ -1031,7 +1099,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       newBooking: 'New booking',
       addedLive: 'Table {id} added to your booking.',
       seatsN: '{n} seats',
-      closeBasket: 'Close'
+      closeBasket: 'Close',
+      addedToast: 'Table {id} added',
+      removedToast: 'Table {id} removed',
+      tablesN: '{n} tables',
+      tables1: '1 table',
+      seatsMax: 'up to {n} seats',
+      totalSeats: 'Total seats: {n}',
+      needMoreSeats: 'There are {seats} seats and {guests}. Add another table to continue.',
+      droppedTables: 'Unavailable tables were removed: {ids}.',
+      bookedBodyMulti: 'Tables {ids}, {date} at {slot}, {guests}. In the final version you will get an email with Apple Wallet and Google Wallet.'
     },
     ru: {
       tagline: 'Торревьеха',
@@ -1116,7 +1193,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       removeTable: 'Убрать',
       changeTable: 'Сменить стол',
       basketEmpty: 'Стол ещё не выбран. Нажмите свободный стол на плане.',
-      mapCartHint: 'Нажмите свободный стол — он попадёт в «Моя бронь».',
+      mapCartHint: 'Нажимайте свободные столы, чтобы добавить их в «Моя бронь». Нажмите ещё раз, чтобы убрать.',
       note: 'Комментарий (необязательно)',
       privacy: 'Я принимаю политику конфиденциальности и обработку моих данных для этой брони.',
       needPrivacy: 'Нужно принять политику конфиденциальности.',
@@ -1127,7 +1204,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       newBooking: 'Новая бронь',
       addedLive: 'Стол {id} добавлен в бронь.',
       seatsN: '{n} мест',
-      closeBasket: 'Закрыть'
+      closeBasket: 'Закрыть',
+      addedToast: 'Стол {id} добавлен',
+      removedToast: 'Стол {id} убран',
+      tablesN: '{n} столов',
+      tables1: '1 стол',
+      seatsMax: 'до {n} мест',
+      totalSeats: 'Всего мест: {n}',
+      needMoreSeats: 'Есть {seats} мест и {guests}. Добавьте ещё стол, чтобы продолжить.',
+      droppedTables: 'Недоступные столы убраны: {ids}.',
+      bookedBodyMulti: 'Столы {ids}, {date} в {slot}, {guests}. В финальной версии вы получите письмо с Apple Wallet и Google Wallet.'
     }
   };
 
@@ -1137,7 +1223,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     date: '',
     slot: '10:00',
     guests: 2,
-    table: null,
+    tables: [],
     plan: null,
     view: 'reservar'
   };
@@ -1232,8 +1318,31 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   function subs() { return load(SUB_KEY, []); }
   function redeems() { return load(REDEEM_KEY, []); }
 
+  function bookingTables(b) {
+    if (b && b.tables && b.tables.length) return b.tables.slice();
+    return b && b.table ? [b.table] : [];
+  }
   function isOccupied(tableId, date, slot) {
-    return bookings().some(function (b) { return b.table === tableId && b.date === date && b.slot === slot; });
+    return bookings().some(function (b) {
+      return b.date === date && b.slot === slot && bookingTables(b).indexOf(tableId) !== -1;
+    });
+  }
+  function shortDate(iso) {
+    if (!iso) return '';
+    var p = iso.split('-');
+    return p[2] + '.' + p[1];
+  }
+  function totalSeats() {
+    return state.tables.reduce(function (sum, id) {
+      return sum + ((TABLE_BY_ID[id] && TABLE_BY_ID[id].cap) || 0);
+    }, 0);
+  }
+  function seatsOk() { return totalSeats() >= state.guests; }
+  function escapeHtml(s) {
+    return String(s).replace(/[<>&]/g, function (c) { return ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]); });
+  }
+  function tablesPhrase(n) {
+    return n === 1 ? t('tables1') : t('tablesN', { n: n });
   }
   function slotPast(date, slot) {
     var today = madridISODate();
@@ -1300,8 +1409,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       var status = 'free';
       if (!state.date || !state.slot) status = 'free';
       else if (isOccupied(id, state.date, state.slot)) status = 'busy';
-      else if (meta && state.guests > meta.cap) status = 'small';
-      if (state.table === id && status === 'free') status = 'selected';
+      if (state.tables.indexOf(id) !== -1 && status === 'free') status = 'selected';
       if (status !== 'free') g.classList.add(status);
       var label = id + ', ' + (meta ? meta.cap : '') + ' — ' + t(status === 'busy' ? 'legendBusy' : status === 'small' ? 'legendSmall' : status === 'selected' ? 'legendSel' : 'legendFree');
       g.setAttribute('aria-label', label);
@@ -1316,23 +1424,38 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   function tableStillValid() {
-    if (!state.table || !state.date || !state.slot) return false;
-    var meta = TABLE_BY_ID[state.table];
-    if (!meta) return false;
-    if (isOccupied(state.table, state.date, state.slot)) return false;
-    if (state.guests > meta.cap) return false;
-    return true;
+    return state.tables.length > 0;
+  }
+  function pruneBasket(notice) {
+    if (!state.tables.length) return [];
+    var kept = [];
+    var dropped = [];
+    state.tables.forEach(function (id) {
+      if (!state.date || !state.slot || isOccupied(id, state.date, state.slot)) dropped.push(id);
+      else kept.push(id);
+    });
+    state.tables = kept;
+    if (notice && dropped.length) {
+      showToast(t('droppedTables', { ids: dropped.join(', ') }));
+    }
+    return dropped;
   }
   function ensureTableValid() {
-    if (state.table && !tableStillValid()) state.table = null;
+    pruneBasket(true);
   }
 
   function recapHtml() {
-    if (!state.table) return '';
-    var meta = TABLE_BY_ID[state.table];
-    return '<h3>' + t('selected', { id: state.table }) + '</h3>' +
-      '<p>' + t(zoneKey(meta.zone)) + ' · ' + t('seatsN', { n: meta.cap }) + '</p>' +
-      '<p>' + fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests) + '</p>';
+    if (!state.tables.length) return '';
+    var rows = state.tables.map(function (id) {
+      var meta = TABLE_BY_ID[id];
+      return '<li><b>' + t('selected', { id: id }) + '</b> <span>' +
+        (meta ? t(zoneKey(meta.zone)) + ' · ' + t('seatsN', { n: meta.cap }) : '') + '</span></li>';
+    }).join('');
+    return '<h3>' + tablesPhrase(state.tables.length) + '</h3>' +
+      '<p>' + fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests) + '</p>' +
+      '<p>' + t('totalSeats', { n: totalSeats() }) + '</p>' +
+      '<ul class="recap-list">' + rows + '</ul>' +
+      (seatsOk() ? '' : '<p class="seats-hint">' + t('needMoreSeats', { seats: totalSeats(), guests: guestsLabel(state.guests) }) + '</p>');
   }
 
   function updateBasketFab() {
@@ -1344,41 +1467,49 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var show = !isAdmin && state.view === 'reservar';
     fab.hidden = !show;
     document.body.classList.toggle('has-basket-fab', show);
-    var has = !!state.table;
+    var n = state.tables.length;
+    var has = n > 0;
     fab.classList.toggle('has-item', has);
     var openBtn = document.getElementById('basket-open');
-    if (openBtn) openBtn.setAttribute('aria-label', t('myBooking') + (has ? ', 1' : ''));
-    if (count) count.textContent = has ? '1' : '0';
+    if (openBtn) openBtn.setAttribute('aria-label', t('myBooking') + (has ? ', ' + n : ''));
+    if (count) count.textContent = String(n);
     if (copy) {
       if (has) {
-        var meta = TABLE_BY_ID[state.table];
-        copy.innerHTML = '<b>' + t('selected', { id: state.table }) + '</b><span>' +
-          fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests) +
-          (meta ? ' · ' + t('seatsN', { n: meta.cap }) : '') + '</span>';
+        copy.innerHTML = '<b>' + tablesPhrase(n) + '</b><span>' +
+          t('seatsMax', { n: totalSeats() }) + ' · ' + shortDate(state.date) + ' ' + state.slot + '</span>';
       } else {
         copy.innerHTML = '';
       }
     }
-    if (go) go.hidden = !has;
+    if (go) {
+      go.hidden = !has;
+      go.disabled = has && !seatsOk();
+    }
   }
 
   function renderBasketSheet() {
     var body = document.getElementById('basket-sheet-body');
     if (!body) return;
-    var remove = document.getElementById('basket-remove');
-    var change = document.getElementById('basket-change');
     var cont = document.getElementById('basket-continue');
-    if (!state.table) {
+    if (!state.tables.length) {
       body.innerHTML = '<p class="muted">' + t('basketEmpty') + '</p>';
-      if (remove) remove.disabled = true;
-      if (change) change.disabled = true;
       if (cont) cont.disabled = true;
       return;
     }
-    body.innerHTML = recapHtml();
-    if (remove) remove.disabled = false;
-    if (change) change.disabled = false;
-    if (cont) cont.disabled = false;
+    var metaLine = fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests);
+    var rows = state.tables.map(function (id) {
+      var meta = TABLE_BY_ID[id];
+      var sub = meta ? (t(zoneKey(meta.zone)) + ' · ' + t('seatsN', { n: meta.cap })) : '';
+      return '<li class="basket-row" data-id="' + id + '">' +
+        '<div class="row-text"><b>' + t('selected', { id: id }) + '</b><span class="row-sub">' + sub + '</span></div>' +
+        '<button type="button" class="row-remove" data-remove="' + id + '" aria-label="' + t('removeTable') + ' ' + id + '">×</button>' +
+        '</li>';
+    }).join('');
+    var hint = seatsOk() ? '' : '<p class="seats-hint">' + t('needMoreSeats', { seats: totalSeats(), guests: guestsLabel(state.guests) }) + '</p>';
+    body.innerHTML = '<div class="basket-meta"><b>' + tablesPhrase(state.tables.length) + '</b>' +
+      '<div>' + metaLine + '</div><div class="muted">' + t('totalSeats', { n: totalSeats() }) + '</div></div>' +
+      '<ul class="basket-list">' + rows + '</ul>' + hint;
+    if (cont) cont.disabled = !seatsOk();
   }
 
   function renderSelection() {
@@ -1389,6 +1520,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   function openBasket() {
+    var toast = document.getElementById('toast');
+    if (toast) { toast.classList.remove('show'); toast.hidden = true; }
     renderBasketSheet();
     document.getElementById('basket-modal').hidden = false;
   }
@@ -1397,11 +1530,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     if (m) m.hidden = true;
   }
   function goToDetails() {
-    if (!tableStillValid()) {
-      state.table = null;
+    pruneBasket(true);
+    if (!state.tables.length) {
       renderSelection();
       closeBasket();
       setView('reservar');
+      return;
+    }
+    if (!seatsOk()) {
+      renderSelection();
+      openBasket();
       return;
     }
     closeBasket();
@@ -1413,6 +1551,23 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   var flyAnim = null;
+  var toastTimer = null;
+  function showToast(msg) {
+    var el = document.getElementById('toast');
+    var live = document.getElementById('basket-live');
+    if (live) live.textContent = msg;
+    if (!el) return;
+    el.textContent = msg;
+    el.hidden = false;
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      el.classList.remove('show');
+      setTimeout(function () { if (!el.classList.contains('show')) el.hidden = true; }, 280);
+    }, 1800);
+  }
   function pulseBasket() {
     var fab = document.getElementById('basket-fab');
     if (!fab) return;
@@ -1423,8 +1578,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   function flyTableToBasket(g, id) {
-    var live = document.getElementById('basket-live');
-    if (live) live.textContent = t('addedLive', { id: id });
+    showToast(t('addedToast', { id: id }));
     updateBasketFab();
     var target = document.getElementById('basket-target');
     if (!g || !target || preferReducedMotion()) {
@@ -1447,7 +1601,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var ey = to.top + to.height / 2;
     var cx = (sx + ex) / 2 + (ex > sx ? -48 : 48);
     var cy = Math.min(sy, ey) - Math.max(90, Math.abs(ex - sx) * 0.28);
-    function q(t, a, b, c) { var u = 1 - t; return u * u * a + 2 * u * t * b + t * t * c; }
+    function q(tt, a, b, c) { var u = 1 - tt; return u * u * a + 2 * u * tt * b + tt * tt * c; }
     var frames = [];
     var steps = 24;
     for (var i = 0; i <= steps; i++) {
@@ -1491,36 +1645,43 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var privacyEl = document.getElementById('book-privacy');
     var err = document.getElementById('book-err');
     err.textContent = '';
-    if (!state.table || !state.date || !state.slot) { err.textContent = t('needTable'); return; }
-    if (isOccupied(state.table, state.date, state.slot) || state.guests > TABLE_BY_ID[state.table].cap) {
-      err.textContent = t('needTable'); return;
-    }
+    pruneBasket(true);
+    if (!state.tables.length || !state.date || !state.slot) { err.textContent = t('needTable'); return; }
+    if (!seatsOk()) { err.textContent = t('needMoreSeats', { seats: totalSeats(), guests: guestsLabel(state.guests) }); return; }
     if (!name || !email || !phone) { err.textContent = t('needFields'); return; }
     if (!validEmail(email)) { err.textContent = t('needEmail'); return; }
     if (!validPhone(phone)) { err.textContent = t('needPhone'); return; }
     if (!privacyEl || !privacyEl.checked) { err.textContent = t('needPrivacy'); return; }
-    var bookedTable = state.table;
+    var bookedTables = state.tables.slice();
     var bookedDate = state.date;
     var bookedSlot = state.slot;
     var bookedGuests = state.guests;
     var list = bookings();
     list.push({
-      id: uid('bk'), table: bookedTable, date: bookedDate, slot: bookedSlot,
+      id: uid('bk'), tables: bookedTables, table: bookedTables[0], date: bookedDate, slot: bookedSlot,
       guests: bookedGuests, name: name, email: email, phone: phone, note: note,
       created: madridISODate() + ' ' + madridHM()
     });
     save(BOOK_KEY, list);
-    state.table = null;
+    state.tables = [];
     ev.target.reset();
     renderMap();
     renderSelection();
     var hero = document.getElementById('confirm-hero');
     if (hero) {
+      var ids = bookedTables.join(', ');
+      var bodyKey = bookedTables.length > 1 ? 'bookedBodyMulti' : 'bookedBody';
+      var rows = bookedTables.map(function (id) {
+        var meta = TABLE_BY_ID[id];
+        return '<li><b>' + t('selected', { id: id }) + '</b> <span>' +
+          (meta ? t(zoneKey(meta.zone)) + ' · ' + t('seatsN', { n: meta.cap }) : '') + '</span></li>';
+      }).join('');
       hero.innerHTML = '<div class="confirm-mark" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.2 17 19 7"/></svg></div>' +
         '<h1>' + t('booked') + '</h1>' +
-        '<div class="recap">' + '<h3>' + t('selected', { id: bookedTable }) + '</h3>' +
-        '<p>' + t('bookedBody', { id: bookedTable, date: fmtDate(bookedDate), slot: bookedSlot, guests: guestsLabel(bookedGuests) }) + '</p>' +
-        (note ? '<p class="muted">' + note.replace(/[<>&]/g, function (c) { return ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]); }) + '</p>' : '') +
+        '<div class="recap">' + '<h3>' + tablesPhrase(bookedTables.length) + '</h3>' +
+        '<p>' + t(bodyKey, { id: bookedTables[0], ids: ids, date: fmtDate(bookedDate), slot: bookedSlot, guests: guestsLabel(bookedGuests) }) + '</p>' +
+        '<ul class="recap-list">' + rows + '</ul>' +
+        (note ? '<p class="muted">' + escapeHtml(note) + '</p>' : '') +
         '</div>';
     }
     setView('confirmacion');
@@ -1675,16 +1836,17 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var date = document.getElementById('admin-date').value || state.date;
     var listEl = document.getElementById('admin-bookings');
     var items = bookings().filter(function (b) { return b.date === date; })
-      .sort(function (a, b) { return a.slot.localeCompare(b.slot) || a.table.localeCompare(b.table); });
+      .sort(function (a, b) { return a.slot.localeCompare(b.slot) || (a.name || '').localeCompare(b.name || ''); });
     if (!items.length) listEl.innerHTML = '<li class="muted">' + t('noBookings') + '</li>';
     else {
-      var byTable = {};
-      items.forEach(function (b) { (byTable[b.table] = byTable[b.table] || []).push(b); });
-      listEl.innerHTML = Object.keys(byTable).sort().map(function (id) {
-        var rows = byTable[id].map(function (b) {
-          return '<div class="muted">' + b.slot + ' · ' + b.name + ' · ' + b.guests + ' ' + t('people') + ' · ' + b.phone + '</div>';
-        }).join('');
-        return '<li><b>' + id + '</b> · ' + (TABLE_BY_ID[id] ? capLabel(TABLE_BY_ID[id].cap) : '') + rows + '</li>';
+      listEl.innerHTML = items.map(function (b) {
+        var ids = bookingTables(b);
+        var seats = ids.reduce(function (s, id) { return s + ((TABLE_BY_ID[id] && TABLE_BY_ID[id].cap) || 0); }, 0);
+        return '<li><b>' + escapeHtml(b.name || '') + '</b>' +
+          '<div class="muted">' + b.slot + ' · ' + ids.join(', ') + ' · ' +
+          b.guests + ' ' + t('people') + ' · ' + t('totalSeats', { n: seats }) + ' · ' + escapeHtml(b.phone || '') + '</div>' +
+          (b.note ? '<div class="muted">' + escapeHtml(b.note) + '</div>' : '') +
+          '</li>';
       }).join('');
     }
     var subEl = document.getElementById('admin-subs');
@@ -1708,7 +1870,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       if (!adminViews[name]) name = 'reservas';
     } else {
       if (!guestViews[name]) name = 'reservar';
-      if (name === 'datos' && !tableStillValid()) name = 'reservar';
+      if (name === 'datos' && !state.tables.length) name = 'reservar';
     }
     state.view = name;
     document.querySelectorAll('main.view').forEach(function (m) {
@@ -1779,23 +1941,27 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     });
     document.getElementById('guest-minus').addEventListener('click', function () {
       state.guests = Math.max(1, state.guests - 1);
-      if (state.table && TABLE_BY_ID[state.table].cap < state.guests) state.table = null;
       renderAll();
     });
     document.getElementById('guest-plus').addEventListener('click', function () {
       state.guests = Math.min(8, state.guests + 1);
-      if (state.table && TABLE_BY_ID[state.table].cap < state.guests) state.table = null;
       renderAll();
     });
     document.getElementById('hall-map').addEventListener('click', function (ev) {
       var g = ev.target.closest('.tbl');
       if (!g) return;
       var id = g.getAttribute('data-id');
-      if (g.classList.contains('busy') || g.classList.contains('small')) return;
-      var replaced = state.table && state.table !== id;
-      if (state.table === id) return;
-      state.table = id;
+      if (g.classList.contains('busy')) return;
+      var idx = state.tables.indexOf(id);
+      if (idx !== -1) {
+        state.tables.splice(idx, 1);
+        renderMap();
+        renderSelection();
+        showToast(t('removedToast', { id: id }));
+        return;
+      }
       closeBasket();
+      state.tables.push(id);
       renderMap();
       document.querySelectorAll('.tbl[data-id="'+id+'"]').forEach(function (el) {
         el.classList.remove('just-picked');
@@ -1815,7 +1981,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     });
     document.getElementById('book-form').addEventListener('submit', confirmBooking);
     document.getElementById('basket-open').addEventListener('click', function () {
-      if (state.table) openBasket();
+      if (state.tables.length) openBasket();
     });
     document.getElementById('basket-go').addEventListener('click', function (e) {
       e.preventDefault();
@@ -1826,14 +1992,17 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     document.getElementById('basket-modal').addEventListener('click', function (e) {
       if (e.target.id === 'basket-modal') closeBasket();
     });
-    document.getElementById('basket-remove').addEventListener('click', function () {
-      state.table = null;
+    document.getElementById('basket-sheet-body').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-remove]');
+      if (!btn) return;
+      var id = btn.getAttribute('data-remove');
+      var idx = state.tables.indexOf(id);
+      if (idx === -1) return;
+      state.tables.splice(idx, 1);
       renderMap();
       renderSelection();
-      closeBasket();
-    });
-    document.getElementById('basket-change').addEventListener('click', function () {
-      closeBasket();
+      showToast(t('removedToast', { id: id }));
+      if (!state.tables.length) closeBasket();
     });
     document.getElementById('datos-back').addEventListener('click', function () { setView('reservar'); });
     document.getElementById('confirm-new').addEventListener('click', function () { setView('reservar'); });
