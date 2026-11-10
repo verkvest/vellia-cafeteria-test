@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0c0b09">
+  <meta name="theme-color" content="#F6F0E6">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Vellia Cafeteria">
   <meta name="application-name" content="Vellia Cafeteria">
   <meta name="description" content="Vellia Cafeteria — reserva de mesas y suscripción de café en Torrevieja.">
@@ -18,17 +18,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
 :root {
-  --bg: #0c0b09;
-  --bg2: #13110f;
-  --surface: #181614;
-  --ink: #f4f0e6;
-  --muted: #9b9488;
-  --line: rgba(244, 240, 230, .12);
-  --accent: #c8f04c;
-  --accent-ink: #10140a;
-  --accent-dim: rgba(200, 240, 76, .14);
-  --busy: #ff6b4a;
-  --busy-dim: rgba(255, 107, 74, .14);
+  --bg: #F6F0E6;
+  --bg2: #F3E6D2;
+  --paper: #FFFBF4;
+  --surface: #FFFBF4;
+  --ink: #2C2720;
+  --muted: #534C44;
+  --line: #E4D9C8;
+  --accent: #C8F04C;
+  --accent-ink: #1F2A0C;
+  --accent-text: #3B6B12;
+  --accent-dim: #E4F29A;
+  --busy: #C53A24;
+  --busy-ink: #8A2418;
+  --busy-dim: #FBD9D0;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
   --tabbar-h: calc(64px + var(--safe-b));
@@ -50,34 +53,35 @@ body {
 body::before {
   content: "";
   pointer-events: none;
-  position: fixed; inset: 0; z-index: 80; opacity: .07;
+  position: fixed; inset: 0; z-index: 80; opacity: .045;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.9'/></svg>");
 }
 h1, h2, h3, .brand-name, .serif, .display { font-family: var(--display); font-weight: 700; letter-spacing: -0.04em; }
 button, input, select, textarea { font: inherit; color: inherit; }
-a { color: var(--accent); }
+a { color: var(--accent-text); }
 .app-header {
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 10px;
   padding: 12px 16px;
-  background: rgba(12, 11, 9, .86);
+  background: rgba(246, 240, 230, .92);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line);
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; flex: 1; min-width: 0; }
-.brand img { width: 34px; height: 34px; border-radius: 9px; }
+.brand img { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); }
 .brand-name { font-size: 0.92rem; font-weight: 700; line-height: 1.05; text-transform: uppercase; }
 .brand-name small { display: block; font-family: var(--sans); font-weight: 500; font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
 .lang { display: flex; gap: 4px; }
 .lang button {
-  border: 1px solid var(--line); background: transparent; color: var(--muted);
+  border: 1px solid var(--line); background: var(--paper); color: var(--muted);
   padding: 6px 9px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
   border-radius: 999px; cursor: pointer;
 }
 .lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .admin-chip {
   font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 5px 8px; white-space: nowrap;
+  border: 1px solid var(--accent-text); color: var(--accent-text); border-radius: 999px; padding: 5px 8px; white-space: nowrap;
+  background: var(--accent-dim);
 }
 .app-header { flex-wrap: wrap; }
 .is-admin .brand-name small { display: none; }
@@ -98,14 +102,14 @@ label.field input, label.field select {
   background: transparent; font-size: 16px; font-weight: 500; color: var(--ink);
   font-family: var(--display); letter-spacing: -0.03em;
 }
-label.field input:focus { outline: none; border-bottom-color: var(--accent); }
-input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(.7); }
+label.field input:focus { outline: none; border-bottom-color: var(--accent-text); }
+input[type="date"]::-webkit-calendar-picker-indicator { opacity: .7; }
 .stepper { display: flex; align-items: center; gap: 8px; }
 .stepper button {
   width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line);
-  background: transparent; font-size: 20px; cursor: pointer; color: var(--ink);
+  background: var(--paper); font-size: 20px; cursor: pointer; color: var(--ink);
 }
-.stepper button:hover { border-color: var(--accent); color: var(--accent); }
+.stepper button:hover { border-color: var(--accent-text); color: var(--accent-text); }
 .stepper output {
   min-width: 3.2rem; text-align: center; font-family: var(--display);
   font-size: 1.7rem; font-weight: 700; letter-spacing: -0.04em;
@@ -113,26 +117,26 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
 }
 .slots { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; margin: 0 0 8px; scrollbar-width: thin; }
 .slots button {
-  flex: 0 0 auto; border: 1px solid var(--line); background: transparent; color: var(--ink);
+  flex: 0 0 auto; border: 1px solid var(--line); background: var(--paper); color: var(--ink);
   border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
 }
 .slots button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.slots button:disabled { opacity: .28; cursor: not-allowed; }
+.slots button:disabled { opacity: .38; cursor: not-allowed; }
 .legend {
   display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 11px; color: var(--muted);
   margin: 0 0 12px; align-items: center; letter-spacing: .04em; text-transform: uppercase;
 }
 .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; border: 1.5px solid; }
-.legend .l-free i { background: var(--accent-dim); border-color: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.legend .l-free i { background: var(--accent-dim); border-color: var(--accent-text); }
 .legend .l-busy i { background: var(--busy-dim); border-color: var(--busy); }
-.legend .l-small i { background: transparent; border-color: #6a655c; }
-.legend .l-sel i { background: var(--accent); border-color: var(--accent); }
+.legend .l-small i { background: #F3EBE0; border-color: #9A9084; }
+.legend .l-sel i { background: var(--accent); border-color: #2C4A0C; }
 .map-card {
-  background: var(--bg2);
+  background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 12px;
   padding: 10px 8px 8px; margin-bottom: 18px;
-  box-shadow: none;
+  box-shadow: 0 8px 24px rgba(80, 55, 30, .06);
 }
 .map-card .map-caption {
   display: flex; justify-content: space-between; align-items: baseline;
@@ -140,25 +144,30 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
 }
 .map-card svg { width: 100%; height: auto; display: block; }
 .tbl { cursor: pointer; }
-.tbl .top { fill: var(--accent-dim); stroke: var(--accent); stroke-width: 1.8; filter: drop-shadow(0 0 5px rgba(200,240,76,.55)); transition: filter .25s, stroke .2s, fill .2s; }
-.tbl .inner { fill: none; stroke: rgba(200,240,76,.4); stroke-width: 1; }
-.tbl .lbl { font-family: var(--sans); font-weight: 700; fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
-.tbl .badge { font-family: var(--sans); font-weight: 600; fill: var(--accent); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.tbl .top { fill: var(--accent-dim); stroke: var(--accent-text); stroke-width: 2; filter: none; transition: filter .25s, stroke .2s, fill .2s, stroke-width .2s; }
+.tbl .inner { fill: none; stroke: rgba(59,107,18,.35); stroke-width: 1; }
+.tbl .lbl { font-family: var(--sans); font-weight: 700; fill: #2C4A0C; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.tbl .badge { font-family: var(--sans); font-weight: 600; fill: var(--accent-text); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .tbl .hit { fill: transparent; }
 .tbl.busy .top { fill: var(--busy-dim); stroke: var(--busy); filter: none; }
-.tbl.busy .inner { stroke: rgba(255,107,74,.35); }
-.tbl.busy .lbl { fill: #f0c8be; }
+.tbl.busy .inner { stroke: rgba(197,58,36,.4); }
+.tbl.busy .lbl { fill: var(--busy-ink); }
 .tbl.busy .badge { fill: var(--busy); }
-.tbl.small .top { fill: transparent; stroke: #5c574e; stroke-dasharray: 4 3; filter: none; }
-.tbl.small .inner { stroke: #3f3c36; }
-.tbl.small .lbl, .tbl.small .badge { fill: #6e6a62; }
-.tbl.selected .top { fill: rgba(200,240,76,.2); stroke: var(--accent); stroke-width: 2.6; filter: drop-shadow(0 0 9px rgba(200,240,76,.85)); }
+.tbl.small .top { fill: #F3EBE0; stroke: #9A9084; stroke-dasharray: 4 3; filter: none; }
+.tbl.small .inner { stroke: #C8BFB3; }
+.tbl.small .lbl, .tbl.small .badge { fill: #5A534B; }
+.tbl.selected .top { fill: var(--accent); stroke: #2C4A0C; stroke-width: 3; filter: drop-shadow(0 2px 6px rgba(59,107,18,.28)); }
+.tbl.selected .lbl { fill: var(--accent-ink); }
+.tbl.selected .badge { fill: #2C4A0C; }
 .tbl.just-picked { animation: pick .38s cubic-bezier(.2,1.4,.4,1); transform-box: fill-box; transform-origin: center; }
 @keyframes pick { 0% { transform: scale(.9); } 70% { transform: scale(1.08); } 100% { transform: scale(1); } }
 .tbl.busy, .tbl.small { cursor: not-allowed; }
-.armchair .seat, .armchair .back { fill: none; stroke: #8a8478; stroke-width: 1.15; }
-.sofa-body { fill: #1f1c19; stroke: #c8f04c; stroke-width: 1.4; }
-.stool-decor { fill: none; stroke: #6a655c; stroke-width: 1.15; pointer-events: none; }
+.armchair .seat, .armchair .back { fill: none; stroke: #8A7358; stroke-width: 1.15; }
+.sofa-body { fill: var(--accent-dim); stroke: var(--accent-text); stroke-width: 1.6; }
+.tbl.busy .sofa-body { fill: var(--busy-dim); stroke: var(--busy); }
+.tbl.selected .sofa-body { fill: var(--accent); stroke: #2C4A0C; stroke-width: 2.4; }
+.tbl.small .sofa-body { fill: #F3EBE0; stroke: #9A9084; stroke-dasharray: 4 3; }
+.stool-decor { fill: #F7EFE3; stroke: #8A7358; stroke-width: 1.15; pointer-events: none; }
 .note { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
 .sel-card, .form-card, .plan, .pass, .admin-card, .soon-card, .checkout {
   background: transparent; border: 0; border-top: 1px solid var(--line);
@@ -176,7 +185,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
   border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 10px 0;
   background: transparent; font-size: 16px; width: 100%; color: var(--ink);
 }
-.form-card input:focus, .sheet input:focus { outline: none; border-bottom-color: var(--accent); }
+.form-card input:focus, .sheet input:focus { outline: none; border-bottom-color: var(--accent-text); }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
   border: 0; border-radius: 999px; padding: 14px 18px; font-weight: 700; font-size: 14px;
@@ -184,13 +193,13 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
   background: var(--accent); color: var(--accent-ink);
 }
 .btn:disabled { opacity: .35; cursor: not-allowed; }
-.btn:not(:disabled):hover { filter: brightness(1.05); }
-.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
-.btn.dark { background: var(--ink); color: var(--bg); }
+.btn:not(:disabled):hover { filter: brightness(1.03); }
+.btn.ghost { background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
+.btn.dark { background: var(--accent-text); color: #F6F0E6; }
 .btn.small { width: auto; padding: 8px 12px; font-size: 11px; }
 .ok-box {
-  display: none; background: var(--accent-dim); border: 1px solid var(--accent); color: var(--ink);
-  border-radius: 4px; padding: 14px; margin: 12px 0; line-height: 1.45;
+  display: none; background: var(--accent-dim); border: 1px solid var(--accent-text); color: var(--ink);
+  border-radius: 8px; padding: 14px; margin: 12px 0; line-height: 1.45;
 }
 .ok-box.show { display: block; }
 .plans { display: flex; flex-direction: column; gap: 0; margin-bottom: 8px; }
@@ -204,34 +213,36 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
   color: var(--accent-ink); background: var(--accent); border-radius: 999px; padding: 3px 8px; margin-bottom: 10px;
 }
 .plan.selected { box-shadow: none; }
-.plan.selected h3 { color: var(--accent); }
+.plan.selected h3 { color: var(--accent-text); }
 .example-note {
   font-size: 12px; color: var(--accent-ink); background: var(--accent);
-  border-radius: 0; padding: 10px 12px; margin-bottom: 8px; line-height: 1.4; font-weight: 600;
+  border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; line-height: 1.4; font-weight: 600;
 }
-.pass .qr { display: flex; justify-content: center; background: #fff; padding: 12px; margin: 12px 0 8px; }
+.pass .qr { display: flex; justify-content: center; background: #fff; padding: 12px; margin: 12px 0 8px; border: 1px solid var(--line); border-radius: 8px; }
 .pass .qr svg { width: 200px; height: 200px; }
 .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
-.kpis div { background: transparent; border: 1px solid var(--line); border-radius: 0; padding: 12px; text-align: left; }
+.kpis div { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 12px; text-align: left; }
 .kpis b { display: block; font-size: 2rem; font-family: var(--display); letter-spacing: -.04em; }
 .kpis span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .modal {
-  position: fixed; inset: 0; background: rgba(8,7,6,.72); z-index: 50;
+  position: fixed; inset: 0; background: rgba(80, 60, 40, .28); z-index: 50;
   display: flex; align-items: flex-end; justify-content: center; padding: 16px 16px calc(16px + var(--safe-b));
 }
 .modal[hidden] { display: none !important; }
 .modal .sheet {
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 8px 8px 0 0;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 16px 16px 0 0;
   padding: 20px 18px; width: 100%; max-width: 440px;
+  box-shadow: 0 -8px 32px rgba(80, 55, 30, .1);
 }
 .stripe-badge {
-  font-size: 12px; color: var(--muted); background: transparent; border: 1px dashed var(--line);
-  border-radius: 0; padding: 10px 0; margin: 8px 0 14px; line-height: 1.4;
+  font-size: 12px; color: var(--muted); background: var(--bg);
+  border: 1px dashed var(--line);
+  border-radius: 8px; padding: 10px 12px; margin: 8px 0 14px; line-height: 1.4;
 }
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
   display: grid; grid-template-columns: 1fr 1fr 1fr;
-  background: rgba(12, 11, 9, .94);
+  background: rgba(255, 251, 244, .96);
   backdrop-filter: blur(18px);
   border-top: 1px solid var(--line);
   padding: 4px 6px var(--safe-b);
@@ -243,12 +254,12 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
   text-transform: uppercase; cursor: pointer;
 }
 .tabbar button svg { width: 22px; height: 22px; }
-.tabbar button.active { color: var(--accent); }
-.tabbar button.soon { opacity: .5; }
-.tabbar .soon-flag { font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.tabbar button.active { color: var(--accent-text); }
+.tabbar button.soon { opacity: .7; }
+.tabbar .soon-flag { font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-text); }
 .admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
 .admin-tabs button {
-  border: 1px solid var(--line); background: transparent; color: var(--ink);
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink);
   border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 600;
   letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; cursor: pointer;
 }
@@ -260,7 +271,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
 .muted { color: var(--muted); }
 .footer-note { text-align: left; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 20px 0 0; }
 .redeem-msg { min-height: 1.4em; font-size: 14px; margin: 8px 0; }
-.redeem-msg.ok { color: var(--accent); }
+.redeem-msg.ok { color: var(--accent-text); }
 .redeem-msg.err { color: var(--busy); }
 #pass, .sel-card, .ok-box { scroll-margin-top: 72px; }
 @media (min-width: 720px) {
@@ -271,9 +282,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
 .tbl.busy .lock { opacity: 1; }
 .tbl.busy .badge { opacity: 0; }
 .tbl.selected .lock { opacity: 0; }
-.filters {
-  /* already set; keep compact single bar */
-}
 
   </style>
 </head>
@@ -340,31 +348,31 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
-  <rect x="40" y="36" width="920" height="608" fill="#12100e"/>
+  <rect x="40" y="36" width="920" height="608" fill="#F3E6D2"/>
   <!-- top window bays -->
-  <g fill="#1c2414" stroke="#3d4a28" stroke-width="0.8">
+  <g fill="#DCECC8" stroke="#7A9A4A" stroke-width="0.8">
     <rect x="56" y="30" width="220" height="12" rx="1"/>
     <rect x="316" y="30" width="216" height="12" rx="1"/>
     <rect x="572" y="30" width="188" height="12" rx="1"/>
     <rect x="800" y="30" width="148" height="12" rx="1"/>
   </g>
   <!-- walls: opening on the right for entrada -->
-  <path d="M40 36 H960 V470 M960 560 V644 H40 V36" fill="none" stroke="#cbbca8" stroke-width="1.7"/>
+  <path d="M40 36 H960 V470 M960 560 V644 H40 V36" fill="none" stroke="#6B5640" stroke-width="1.7"/>
   <!-- three dark columns dividing window bays -->
   <g class="cols">
-    <rect x="286" y="36" width="22" height="54" fill="#2a2622" stroke="#6a6358" stroke-width="1"/>
-    <rect x="544" y="36" width="22" height="54" fill="#2a2622" stroke="#6a6358" stroke-width="1"/>
-    <rect x="772" y="36" width="22" height="54" fill="#2a2622" stroke="#6a6358" stroke-width="1"/>
+    <rect x="286" y="36" width="22" height="54" fill="#E4D3B8" stroke="#A07850" stroke-width="1"/>
+    <rect x="544" y="36" width="22" height="54" fill="#E4D3B8" stroke="#A07850" stroke-width="1"/>
+    <rect x="772" y="36" width="22" height="54" fill="#E4D3B8" stroke="#A07850" stroke-width="1"/>
   </g>
   <!-- dimension 3730 at first column -->
-  <g fill="#7a756c" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="0.8">
-    <path d="M56 88 H286" stroke="#7a756c" stroke-width="0.6"/>
-    <path d="M56 84 V92 M286 84 V92" stroke="#7a756c" stroke-width="0.6"/>
+  <g fill="#5C4C3A" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="0.8">
+    <path d="M56 88 H286" stroke="#5C4C3A" stroke-width="0.6"/>
+    <path d="M56 84 V92 M286 84 V92" stroke="#5C4C3A" stroke-width="0.6"/>
     <text x="171" y="85" text-anchor="middle">3730</text>
   </g>
   <!-- banquette under M tables only -->
-  <path d="M316 58 H960" fill="none" stroke="#8a8378" stroke-width="6" stroke-linecap="butt"/>
-  <text x="50" y="28" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.4" fill="#7a756c">VENTANAL</text>
+  <path d="M316 58 H960" fill="none" stroke="#B8956A" stroke-width="6" stroke-linecap="butt"/>
+  <text x="50" y="28" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.4" fill="#5C4C3A">VENTANAL</text>
   <g class="tbl" data-id="V1" data-cap="4" tabindex="0" role="button">
     <g class="armchair" transform="translate(92.0,156.0) rotate(45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(148.0,156.0) rotate(315)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
     <circle class="hit" cx="120" cy="128" r="52"/>
@@ -372,7 +380,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="120" cy="128" r="22"/>
     <text class="lbl" x="120" y="122" font-size="18">V1</text>
     <text class="badge" x="120" y="136" font-size="11">4</text>
-    <g class="lock" transform="translate(120.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(120.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="V2" data-cap="4" tabindex="0" role="button">
     <g class="armchair" transform="translate(194.0,156.0) rotate(45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(250.0,156.0) rotate(315)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
@@ -381,7 +389,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="222" cy="128" r="22"/>
     <text class="lbl" x="222" y="122" font-size="18">V2</text>
     <text class="badge" x="222" y="136" font-size="11">4</text>
-    <g class="lock" transform="translate(222.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(222.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M1" data-cap="2" tabindex="0" role="button">
     <g class="armchair" transform="translate(390.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
@@ -390,7 +398,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="390" cy="128" r="14"/>
     <text class="lbl" x="390" y="123" font-size="15">M1</text>
     <text class="badge" x="390" y="135" font-size="10">2</text>
-    <g class="lock" transform="translate(390.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(390.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M2" data-cap="2" tabindex="0" role="button">
     <g class="armchair" transform="translate(490.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
@@ -399,7 +407,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="490" cy="128" r="14"/>
     <text class="lbl" x="490" y="123" font-size="15">M2</text>
     <text class="badge" x="490" y="135" font-size="10">2</text>
-    <g class="lock" transform="translate(490.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(490.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M3" data-cap="2" tabindex="0" role="button">
     <g class="armchair" transform="translate(636.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
@@ -408,7 +416,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="636" cy="128" r="14"/>
     <text class="lbl" x="636" y="123" font-size="15">M3</text>
     <text class="badge" x="636" y="135" font-size="10">2</text>
-    <g class="lock" transform="translate(636.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(636.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M4" data-cap="2" tabindex="0" role="button">
     <g class="armchair" transform="translate(726.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
@@ -417,7 +425,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="726" cy="128" r="14"/>
     <text class="lbl" x="726" y="123" font-size="15">M4</text>
     <text class="badge" x="726" y="135" font-size="10">2</text>
-    <g class="lock" transform="translate(726.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(726.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M5" data-cap="2" tabindex="0" role="button">
     <g class="armchair" transform="translate(846.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
@@ -426,7 +434,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="846" cy="128" r="14"/>
     <text class="lbl" x="846" y="123" font-size="15">M5</text>
     <text class="badge" x="846" y="135" font-size="10">2</text>
-    <g class="lock" transform="translate(846.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(846.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M6" data-cap="2" tabindex="0" role="button">
     <g class="armchair" transform="translate(926.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
@@ -435,21 +443,21 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="926" cy="128" r="14"/>
     <text class="lbl" x="926" y="123" font-size="15">M6</text>
     <text class="badge" x="926" y="135" font-size="10">2</text>
-    <g class="lock" transform="translate(926.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(926.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl zone-s" data-id="S1" data-cap="4" tabindex="0" role="button">
     <rect class="hit" x="52" y="250" width="230" height="230" rx="2"/>
     <rect class="sofa-body" x="62" y="268" width="88" height="88" rx="3"/>
     <rect class="sofa-body" x="158" y="268" width="88" height="88" rx="3"/>
     <rect class="sofa-body" x="62" y="364" width="88" height="88" rx="3"/>
-    <rect x="168" y="376" width="70" height="52" rx="1" fill="none" stroke="#6a655c" stroke-width="1.1"/>
+    <rect x="168" y="376" width="70" height="52" rx="1" fill="none" stroke="#8A7358" stroke-width="1.1"/>
     <text class="lbl" x="150" y="348" font-size="20">S1</text>
     <text class="badge" x="150" y="366" font-size="11">4</text>
-    <g class="lock" transform="translate(150.0,376.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(150.0,376.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="bar-decor" aria-hidden="true">
-    <rect x="308" y="340" width="72" height="250" rx="3" fill="#1a1612" stroke="#8a8378" stroke-width="1.3"/>
-    <text x="344" y="470" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="11" letter-spacing="2" fill="#8a8378" transform="rotate(-90 344 470)">BARRA</text>
+    <rect x="308" y="340" width="72" height="250" rx="3" fill="#EAD9C0" stroke="#B8956A" stroke-width="1.3"/>
+    <text x="344" y="470" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="11" letter-spacing="2" fill="#5C4C3A" transform="rotate(-90 344 470)">BARRA</text>
     <circle class="stool-decor" cx="286" cy="390" r="11"/>
     <circle class="stool-decor" cx="286" cy="460" r="11"/>
     <circle class="stool-decor" cx="286" cy="530" r="11"/>
@@ -464,7 +472,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="600" cy="430" r="30"/>
     <text class="lbl" x="600" y="424" font-size="18">G1</text>
     <text class="badge" x="600" y="438" font-size="11">4</text>
-    <g class="lock" transform="translate(600.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(600.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="G2" data-cap="4" tabindex="0" role="button">
     <g class="armchair" transform="translate(863.8,473.8) rotate(-45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(776.2,473.8) rotate(45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(776.2,386.2) rotate(135)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(863.8,386.2) rotate(225)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
@@ -473,16 +481,16 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacit
     <circle class="inner" cx="820" cy="430" r="30"/>
     <text class="lbl" x="820" y="424" font-size="18">G2</text>
     <text class="badge" x="820" y="438" font-size="11">4</text>
-    <g class="lock" transform="translate(820.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+    <g class="lock" transform="translate(820.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
-  <path d="M960 470 V560" stroke="#12100e" stroke-width="3"/>
-  <path d="M960 470 L1000 470 M960 560 L1000 560" stroke="#cbbca8" stroke-width="1.2"/>
-  <text x="908" y="522" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="12" letter-spacing="1.6" fill="#9b9488">ENTRADA</text>
-  <path d="M940 500 H960" stroke="#9b9488" stroke-width="0.8" marker-end=""/>
-  <path d="M930 515 L948 515 L948 528" fill="none" stroke="#9b9488" stroke-width="0.9"/>
+  <path d="M960 470 V560" stroke="#F3E6D2" stroke-width="3"/>
+  <path d="M960 470 L1000 470 M960 560 L1000 560" stroke="#6B5640" stroke-width="1.2"/>
+  <text x="908" y="522" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="12" letter-spacing="1.6" fill="#5C4C3A">ENTRADA</text>
+  <path d="M940 500 H960" stroke="#5C4C3A" stroke-width="0.8" marker-end=""/>
+  <path d="M930 515 L948 515 L948 528" fill="none" stroke="#5C4C3A" stroke-width="0.9"/>
   <!-- second door, service, upper right -->
-  <path d="M960 200 V250" stroke="#12100e" stroke-width="3"/>
-  <text x="918" y="230" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.2" fill="#6a655c">COCINA</text>
+  <path d="M960 200 V250" stroke="#F3E6D2" stroke-width="3"/>
+  <text x="918" y="230" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.2" fill="#5C4C3A">COCINA</text>
 </svg>
     </div>
     <div id="book-ok" class="ok-box" role="status"></div>
