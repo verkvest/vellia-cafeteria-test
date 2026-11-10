@@ -157,6 +157,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity: .7; }
 .tbl.small .inner { stroke: #C8BFB3; }
 .tbl.small .lbl, .tbl.small .badge { fill: #5A534B; }
 .tbl.selected .top { fill: var(--accent); stroke: #2C4A0C; stroke-width: 3; filter: drop-shadow(0 2px 6px rgba(59,107,18,.28)); }
+.tbl { -webkit-tap-highlight-color: transparent; }
+.tbl:focus { outline: none; }
+.tbl:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; }
 .tbl.selected .lbl { fill: var(--accent-ink); }
 .tbl.selected .badge { fill: #2C4A0C; }
 .tbl.just-picked { animation: pick .38s cubic-bezier(.2,1.4,.4,1); transform-box: fill-box; transform-origin: center; }
@@ -491,6 +494,110 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
   .toast { transition: none; }
 }
 
+/* ---- phone: large portrait floor plan + compact booking bar ---- */
+:root { --header-h: calc(56px + var(--safe-t)); --basket-space: 0px; }
+body.has-basket-fab { --basket-space: 88px; }
+.map-frame, .map-spin, .map-zoom { width: 100%; }
+.map-zoom { transform-origin: center center; }
+@media (max-width: 719px) {
+  #view-reservar {
+    padding: 0 0 8px;
+    max-width: none;
+  }
+  #view-reservar .lead { display: none; }
+  #view-reservar .hint-card,
+  #view-reservar .footer-note { display: none; }
+  .booking-bar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 28;
+    background: rgba(246, 240, 230, .94);
+    backdrop-filter: blur(14px);
+    padding: 6px 12px 8px;
+    margin: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .app-header { padding: 6px 12px 6px; gap: 6px; }
+  #view-reservar .filters {
+    gap: 4px 10px;
+    margin-bottom: 2px;
+    padding-bottom: 4px;
+  }
+  #view-reservar label.field { gap: 0; }
+  #view-reservar label.field input {
+    padding: 2px 0;
+    font-size: 15px;
+  }
+  #view-reservar .stepper { gap: 4px; }
+  #view-reservar .stepper button { width: 30px; height: 30px; font-size: 17px; }
+  #view-reservar .stepper output { min-width: 2rem; font-size: 1.15rem; }
+  #view-reservar .slots-wrap { margin: 0; }
+  #view-reservar .slots-wrap > .field { display: none; }
+  #view-reservar .slots { padding: 0 0 2px; margin: 0; gap: 5px; }
+  #view-reservar .slots button { padding: 5px 10px; font-size: 12.5px; }
+  #view-reservar .legend { margin: 0; gap: 4px 8px; font-size: 9px; }
+  #view-reservar .map-card {
+    margin: 6px 6px 0;
+    padding: 3px 2px 2px;
+    border-radius: 14px;
+  }
+  #view-reservar .map-caption { display: none; }
+  .map-frame {
+    position: relative;
+    overflow: hidden;
+    container-type: size;
+    width: min(100%, calc((100dvh - var(--header-h) - 88px - var(--tabbar-h) - var(--basket-space) - 8px) * 0.68));
+    aspect-ratio: 680 / 1000;
+    margin: 0 auto;
+    touch-action: pan-y;
+  }
+  .map-spin {
+    position: absolute;
+    width: 100cqh;
+    height: 100cqw;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  .map-spin .map-zoom,
+  .map-spin svg { width: 100%; height: 100%; display: block; }
+  /* CSS px here are SVG user units (~0.52 screen px after the portrait fit).
+     32uu ≈ 16.5px on a 390px phone; keep label+badge in one stack so the
+     badge stays under the name after the counter-rotation. */
+  #hall-map .tbl .label-stack,
+  #hall-map-admin .tbl .label-stack,
+  #hall-map text.upright,
+  #hall-map-admin text.upright {
+    transform: rotate(-90deg);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  #hall-map .tbl .lbl,
+  #hall-map-admin .tbl .lbl {
+    font-size: 32px;
+    font-weight: 800;
+    paint-order: stroke fill;
+    stroke: #FFFBF4;
+    stroke-width: 6px;
+  }
+  #hall-map .tbl .badge,
+  #hall-map-admin .tbl .badge { font-size: 22px; font-weight: 700; }
+  #hall-map text.upright,
+  #hall-map-admin text.upright { font-size: 24px; font-weight: 700; letter-spacing: 0.8px; }
+  #hall-map .tbl[data-cap="2"] .top,
+  #hall-map-admin .tbl[data-cap="2"] .top { r: 28px; }
+  #hall-map .tbl[data-cap="2"] circle:not(.hit):not(.top),
+  #hall-map-admin .tbl[data-cap="2"] circle:not(.hit):not(.top) { r: 18px; }
+  #admin-map-card .map-frame {
+    width: min(100%, calc((100dvh - var(--header-h) - 150px - var(--tabbar-h) - 16px) * 0.68));
+  }
+}
+@media (min-width: 720px) {
+  .map-frame, .map-spin, .map-zoom { position: relative; }
+  .map-card svg { width: 100%; height: auto; display: block; }
+}
+
+
   </style>
 </head>
 <body>
@@ -517,6 +624,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
   </div>
 
   <main id="view-reservar" class="view">
+    <div class="booking-bar" id="booking-bar">
     <div class="lead">
       <h1 data-i18n="reserveTitle">Elige tu mesa</h1>
       <p data-i18n="reserveLead">Selecciona fecha, hora y número de personas, y toca la mesa en el plano.</p>
@@ -535,7 +643,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
         </div>
       </label>
     </div>
-    <div>
+    <div class="slots-wrap">
       <label class="field" style="margin-bottom:6px;"><span data-i18n="time">Hora</span></label>
       <div class="slots" id="slots"></div>
     </div>
@@ -545,8 +653,12 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
       <span class="l-small"><i></i><span data-i18n="legendSmall">Pequeña para el grupo</span></span>
       <span class="l-sel"><i></i><span data-i18n="legendSel">Seleccionada</span></span>
     </div>
+    </div>
     <div class="map-card">
       <div class="map-caption"><span data-i18n="mapHint">Toca una mesa libre</span><span>Vellia Cafeteria</span></div>
+      <div class="map-frame" id="map-frame">
+      <div class="map-spin">
+      <div class="map-zoom" id="map-zoom">
       <svg id="hall-map" viewBox="0 0 1000 680" role="img" aria-labelledby="mapTitle mapDesc">
   <title id="mapTitle">Plano de Vellia Cafeteria</title>
   <desc id="mapDesc">Ventanal superior con tres columnas, mesas V1 y V2 a la izquierda, banqueta M1 a M6, sofá S1, barra vertical decorativa y mesas grandes G1 y G2. Entrada en la pared derecha.</desc>
@@ -576,18 +688,17 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
   <g fill="#5C4C3A" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="0.8">
     <path d="M56 88 H286" stroke="#5C4C3A" stroke-width="0.6"/>
     <path d="M56 84 V92 M286 84 V92" stroke="#5C4C3A" stroke-width="0.6"/>
-    <text x="171" y="85" text-anchor="middle">3730</text>
+    <text x="171" y="85" text-anchor="middle" class="upright">3730</text>
   </g>
   <!-- banquette under M tables only -->
   <path d="M316 58 H960" fill="none" stroke="#B8956A" stroke-width="6" stroke-linecap="butt"/>
-  <text x="50" y="28" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.4" fill="#5C4C3A">VENTANAL</text>
+  <text x="520" y="82" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="0.6" fill="#5C4C3A" class="upright">VENTANAL</text>
   <g class="tbl" data-id="V1" data-cap="4" tabindex="0" role="button">
     <g class="armchair" transform="translate(92.0,156.0) rotate(45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(148.0,156.0) rotate(315)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
     <circle class="hit" cx="120" cy="128" r="52"/>
     <circle class="top" cx="120" cy="128" r="30"/>
     <circle class="inner" cx="120" cy="128" r="22"/>
-    <text class="lbl" x="120" y="122" font-size="18">V1</text>
-    <text class="badge" x="120" y="136" font-size="11">4</text>
+    <g class="label-stack"><text class="lbl" x="120" y="122" font-size="18">V1</text><text class="badge" x="120" y="136" font-size="11">4</text></g>
     <g class="lock" transform="translate(120.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="V2" data-cap="4" tabindex="0" role="button">
@@ -595,8 +706,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="222" cy="128" r="52"/>
     <circle class="top" cx="222" cy="128" r="30"/>
     <circle class="inner" cx="222" cy="128" r="22"/>
-    <text class="lbl" x="222" y="122" font-size="18">V2</text>
-    <text class="badge" x="222" y="136" font-size="11">4</text>
+    <g class="label-stack"><text class="lbl" x="222" y="122" font-size="18">V2</text><text class="badge" x="222" y="136" font-size="11">4</text></g>
     <g class="lock" transform="translate(222.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M1" data-cap="2" tabindex="0" role="button">
@@ -604,8 +714,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="390" cy="128" r="44"/>
     <circle class="top" cx="390" cy="128" r="22"/>
     <circle class="inner" cx="390" cy="128" r="14"/>
-    <text class="lbl" x="390" y="123" font-size="15">M1</text>
-    <text class="badge" x="390" y="135" font-size="10">2</text>
+    <g class="label-stack"><text class="lbl" x="390" y="123" font-size="15">M1</text><text class="badge" x="390" y="135" font-size="10">2</text></g>
     <g class="lock" transform="translate(390.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M2" data-cap="2" tabindex="0" role="button">
@@ -613,8 +722,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="490" cy="128" r="44"/>
     <circle class="top" cx="490" cy="128" r="22"/>
     <circle class="inner" cx="490" cy="128" r="14"/>
-    <text class="lbl" x="490" y="123" font-size="15">M2</text>
-    <text class="badge" x="490" y="135" font-size="10">2</text>
+    <g class="label-stack"><text class="lbl" x="490" y="123" font-size="15">M2</text><text class="badge" x="490" y="135" font-size="10">2</text></g>
     <g class="lock" transform="translate(490.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M3" data-cap="2" tabindex="0" role="button">
@@ -622,8 +730,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="636" cy="128" r="44"/>
     <circle class="top" cx="636" cy="128" r="22"/>
     <circle class="inner" cx="636" cy="128" r="14"/>
-    <text class="lbl" x="636" y="123" font-size="15">M3</text>
-    <text class="badge" x="636" y="135" font-size="10">2</text>
+    <g class="label-stack"><text class="lbl" x="636" y="123" font-size="15">M3</text><text class="badge" x="636" y="135" font-size="10">2</text></g>
     <g class="lock" transform="translate(636.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M4" data-cap="2" tabindex="0" role="button">
@@ -631,8 +738,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="726" cy="128" r="44"/>
     <circle class="top" cx="726" cy="128" r="22"/>
     <circle class="inner" cx="726" cy="128" r="14"/>
-    <text class="lbl" x="726" y="123" font-size="15">M4</text>
-    <text class="badge" x="726" y="135" font-size="10">2</text>
+    <g class="label-stack"><text class="lbl" x="726" y="123" font-size="15">M4</text><text class="badge" x="726" y="135" font-size="10">2</text></g>
     <g class="lock" transform="translate(726.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M5" data-cap="2" tabindex="0" role="button">
@@ -640,8 +746,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="846" cy="128" r="44"/>
     <circle class="top" cx="846" cy="128" r="22"/>
     <circle class="inner" cx="846" cy="128" r="14"/>
-    <text class="lbl" x="846" y="123" font-size="15">M5</text>
-    <text class="badge" x="846" y="135" font-size="10">2</text>
+    <g class="label-stack"><text class="lbl" x="846" y="123" font-size="15">M5</text><text class="badge" x="846" y="135" font-size="10">2</text></g>
     <g class="lock" transform="translate(846.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M6" data-cap="2" tabindex="0" role="button">
@@ -649,8 +754,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="926" cy="128" r="44"/>
     <circle class="top" cx="926" cy="128" r="22"/>
     <circle class="inner" cx="926" cy="128" r="14"/>
-    <text class="lbl" x="926" y="123" font-size="15">M6</text>
-    <text class="badge" x="926" y="135" font-size="10">2</text>
+    <g class="label-stack"><text class="lbl" x="926" y="123" font-size="15">M6</text><text class="badge" x="926" y="135" font-size="10">2</text></g>
     <g class="lock" transform="translate(926.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl zone-s" data-id="S1" data-cap="4" tabindex="0" role="button">
@@ -659,8 +763,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <rect class="sofa-body" x="158" y="268" width="88" height="88" rx="3"/>
     <rect class="sofa-body" x="62" y="364" width="88" height="88" rx="3"/>
     <rect x="168" y="376" width="70" height="52" rx="1" fill="none" stroke="#8A7358" stroke-width="1.1"/>
-    <text class="lbl" x="150" y="348" font-size="20">S1</text>
-    <text class="badge" x="150" y="366" font-size="11">4</text>
+    <g class="label-stack"><text class="lbl" x="150" y="348" font-size="20">S1</text><text class="badge" x="150" y="366" font-size="11">4</text></g>
     <g class="lock" transform="translate(150.0,376.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="bar-decor" aria-hidden="true">
@@ -678,8 +781,7 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="600" cy="430" r="60"/>
     <circle class="top" cx="600" cy="430" r="38"/>
     <circle class="inner" cx="600" cy="430" r="30"/>
-    <text class="lbl" x="600" y="424" font-size="18">G1</text>
-    <text class="badge" x="600" y="438" font-size="11">4</text>
+    <g class="label-stack"><text class="lbl" x="600" y="424" font-size="18">G1</text><text class="badge" x="600" y="438" font-size="11">4</text></g>
     <g class="lock" transform="translate(600.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="G2" data-cap="4" tabindex="0" role="button">
@@ -687,19 +789,21 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
     <circle class="hit" cx="820" cy="430" r="60"/>
     <circle class="top" cx="820" cy="430" r="38"/>
     <circle class="inner" cx="820" cy="430" r="30"/>
-    <text class="lbl" x="820" y="424" font-size="18">G2</text>
-    <text class="badge" x="820" y="438" font-size="11">4</text>
+    <g class="label-stack"><text class="lbl" x="820" y="424" font-size="18">G2</text><text class="badge" x="820" y="438" font-size="11">4</text></g>
     <g class="lock" transform="translate(820.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <path d="M960 470 V560" stroke="#F3E6D2" stroke-width="3"/>
   <path d="M960 470 L1000 470 M960 560 L1000 560" stroke="#6B5640" stroke-width="1.2"/>
-  <text x="908" y="522" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="12" letter-spacing="1.6" fill="#5C4C3A">ENTRADA</text>
+  <text x="908" y="522" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="12" letter-spacing="1.6" fill="#5C4C3A" class="upright">ENTRADA</text>
   <path d="M940 500 H960" stroke="#5C4C3A" stroke-width="0.8" marker-end=""/>
   <path d="M930 515 L948 515 L948 528" fill="none" stroke="#5C4C3A" stroke-width="0.9"/>
   <!-- second door, service, upper right -->
   <path d="M960 200 V250" stroke="#F3E6D2" stroke-width="3"/>
-  <text x="918" y="230" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.2" fill="#5C4C3A">COCINA</text>
+  <text x="900" y="250" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="0.8" fill="#5C4C3A" class="upright">COCINA</text>
 </svg>
+      </div>
+      </div>
+      </div>
     </div>
     <p class="hint-card" data-i18n="mapCartHint">Toca mesas libres para añadirlas a Mi reserva. Vuelve a tocar para quitarlas.</p>
     <p class="footer-note">Vellia Cafeteria · Torrevieja</p>
@@ -1577,28 +1681,26 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     setTimeout(function () { fab.classList.remove('pulse'); }, 500);
   }
 
-  function flyTableToBasket(g, id) {
-    showToast(t('addedToast', { id: id }));
-    updateBasketFab();
-    var target = document.getElementById('basket-target');
-    if (!g || !target || preferReducedMotion()) {
-      pulseBasket();
+  function tableAnchor(g) {
+    var el = g && (g.querySelector('.top') || g.querySelector('.sofa-body') || g);
+    return el ? el.getBoundingClientRect() : null;
+  }
+  function flyBadge(fromRect, toRect, label, landing, fadeIn) {
+    if (!fromRect || !toRect || preferReducedMotion()) {
+      if (landing) landing();
       return;
     }
-    var fromEl = g.querySelector('.top') || g.querySelector('.sofa-body') || g;
-    var from = fromEl.getBoundingClientRect();
-    var to = target.getBoundingClientRect();
-    if (!from.width || !to.width) { pulseBasket(); return; }
+    if (!fromRect.width || !toRect.width) { if (landing) landing(); return; }
     if (flyAnim) { try { flyAnim.cancel(); } catch (e) {} flyAnim = null; }
     document.querySelectorAll('.fly-ghost').forEach(function (n) { n.remove(); });
     var ghost = document.createElement('div');
     ghost.className = 'fly-ghost';
-    ghost.textContent = t('selected', { id: id });
+    ghost.textContent = label;
     document.body.appendChild(ghost);
-    var sx = from.left + from.width / 2;
-    var sy = from.top + from.height / 2;
-    var ex = to.left + to.width / 2;
-    var ey = to.top + to.height / 2;
+    var sx = fromRect.left + fromRect.width / 2;
+    var sy = fromRect.top + fromRect.height / 2;
+    var ex = toRect.left + toRect.width / 2;
+    var ey = toRect.top + toRect.height / 2;
     var cx = (sx + ex) / 2 + (ex > sx ? -48 : 48);
     var cy = Math.min(sy, ey) - Math.max(90, Math.abs(ex - sx) * 0.28);
     function q(tt, a, b, c) { var u = 1 - tt; return u * u * a + 2 * u * tt * b + tt * tt * c; }
@@ -1608,9 +1710,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       var tt = i / steps;
       var x = q(tt, sx, cx, ex);
       var y = q(tt, sy, cy, ey);
-      var sc = tt < 0.15 ? 0.86 + tt * 1.1 : (tt < 0.75 ? 1.02 - (tt - 0.15) * 0.25 : 0.87 - (tt - 0.75) * 1.6);
-      if (sc < 0.28) sc = 0.28;
-      var op = tt > 0.88 ? 1 - (tt - 0.88) / 0.12 : 1;
+      var sc, op;
+      if (fadeIn) {
+        sc = tt < 0.2 ? 0.3 + tt * 2 : (tt < 0.8 ? 0.7 + (tt - 0.2) * 0.5 : 1.02);
+        if (sc > 1.08) sc = 1.08;
+        op = tt < 0.12 ? tt / 0.12 : 1;
+      } else {
+        sc = tt < 0.15 ? 0.86 + tt * 1.1 : (tt < 0.75 ? 1.02 - (tt - 0.15) * 0.25 : 0.87 - (tt - 0.75) * 1.6);
+        if (sc < 0.28) sc = 0.28;
+        op = tt > 0.88 ? 1 - (tt - 0.88) / 0.12 : 1;
+      }
       frames.push({
         transform: 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%) scale(' + sc + ')',
         opacity: String(op),
@@ -1622,9 +1731,26 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     flyAnim.onfinish = function () {
       ghost.remove();
       flyAnim = null;
-      pulseBasket();
+      if (landing) landing();
     };
     flyAnim.oncancel = function () { if (ghost.parentNode) ghost.remove(); };
+  }
+  function flyTableToBasket(g, id) {
+    showToast(t('addedToast', { id: id }));
+    updateBasketFab();
+    var target = document.getElementById('basket-target');
+    var from = tableAnchor(g);
+    var to = target ? target.getBoundingClientRect() : null;
+    if (!target || preferReducedMotion()) { pulseBasket(); return; }
+    flyBadge(from, to, t('selected', { id: id }), pulseBasket, false);
+  }
+  function flyBasketToTable(g, id) {
+    showToast(t('removedToast', { id: id }));
+    var target = document.getElementById('basket-target');
+    var to = tableAnchor(g);
+    var from = target ? target.getBoundingClientRect() : null;
+    if (!target || !to || preferReducedMotion()) return;
+    flyBadge(from, to, t('selected', { id: id }), null, true);
   }
 
   function validEmail(s) {
@@ -1823,10 +1949,20 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var src = document.getElementById('hall-map');
     if (!slot || !src) return;
     if (!document.getElementById('hall-map-admin')) {
+      var frame = document.createElement('div');
+      frame.className = 'map-frame';
+      var spin = document.createElement('div');
+      spin.className = 'map-spin';
+      var zoom = document.createElement('div');
+      zoom.className = 'map-zoom';
       var clone = src.cloneNode(true);
       clone.id = 'hall-map-admin';
+      zoom.appendChild(clone);
+      spin.appendChild(zoom);
+      frame.appendChild(spin);
       slot.innerHTML = '';
-      slot.appendChild(clone);
+      slot.appendChild(frame);
+      bindMapGestures(frame);
     }
     renderMap();
   }
@@ -1957,7 +2093,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         state.tables.splice(idx, 1);
         renderMap();
         renderSelection();
-        showToast(t('removedToast', { id: id }));
+        flyBasketToTable(g, id);
         return;
       }
       closeBasket();
@@ -1999,10 +2135,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       var idx = state.tables.indexOf(id);
       if (idx === -1) return;
       state.tables.splice(idx, 1);
+      var g = document.querySelector('#hall-map .tbl[data-id="' + id + '"]');
+      closeBasket();
       renderMap();
       renderSelection();
-      showToast(t('removedToast', { id: id }));
-      if (!state.tables.length) closeBasket();
+      if (g) flyBasketToTable(g, id);
+      else showToast(t('removedToast', { id: id }));
     });
     document.getElementById('datos-back').addEventListener('click', function () { setView('reservar'); });
     document.getElementById('confirm-new').addEventListener('click', function () { setView('reservar'); });
@@ -2042,6 +2180,63 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     window.addEventListener('hashchange', onHash);
   }
 
+
+  function bindMapGestures(frame) {
+    if (!frame || frame.dataset.gestures === '1') return;
+    var zoom = frame.querySelector('.map-zoom');
+    if (!zoom) return;
+    frame.dataset.gestures = '1';
+    var st = { scale: 1, x: 0, y: 0 };
+    function apply() {
+      if (st.scale <= 1.01) { st.scale = 1; st.x = 0; st.y = 0; }
+      zoom.style.transform = 'translate(' + st.x + 'px,' + st.y + 'px) scale(' + st.scale + ')';
+    }
+    var pts = {};
+    var start = null;
+    function dist(a, b) {
+      var dx = a.x - b.x, dy = a.y - b.y;
+      return Math.sqrt(dx * dx + dy * dy) || 1;
+    }
+    function mid(a, b) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
+    function list() { return Object.keys(pts).map(function (k) { return pts[k]; }); }
+    frame.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+      var arr = list();
+      if (arr.length === 2) {
+        start = { scale: st.scale, x: st.x, y: st.y, d: dist(arr[0], arr[1]), m: mid(arr[0], arr[1]) };
+        try { frame.setPointerCapture(e.pointerId); } catch (err) {}
+      } else if (arr.length === 1 && st.scale > 1) {
+        start = { scale: st.scale, x: st.x, y: st.y, px: e.clientX, py: e.clientY, pan: true };
+        try { frame.setPointerCapture(e.pointerId); } catch (err) {}
+      }
+    });
+    frame.addEventListener('pointermove', function (e) {
+      if (!pts[e.pointerId]) return;
+      pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+      var arr = list();
+      if (arr.length === 2 && start && start.d) {
+        e.preventDefault();
+        var d = dist(arr[0], arr[1]);
+        st.scale = Math.min(2.6, Math.max(1, start.scale * (d / start.d)));
+        apply();
+      } else if (arr.length === 1 && start && start.pan) {
+        e.preventDefault();
+        st.x = start.x + (e.clientX - start.px);
+        st.y = start.y + (e.clientY - start.py);
+        apply();
+      }
+    });
+    function up(e) {
+      delete pts[e.pointerId];
+      if (list().length < 2) start = null;
+      apply();
+    }
+    frame.addEventListener('pointerup', up);
+    frame.addEventListener('pointercancel', up);
+    frame.addEventListener('pointerleave', function (e) { if (pts[e.pointerId]) up(e); });
+  }
+
   function registerPwa() {
     if (!('serviceWorker' in navigator)) return;
     if (!/^https?:$/.test(location.protocol)) return;
@@ -2058,6 +2253,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     document.getElementById('guest-tabbar').hidden = isAdmin;
     document.getElementById('admin-tabbar-space').hidden = !isAdmin;
     bind();
+    bindMapGestures(document.getElementById('map-frame'));
     applyI18n();
     var initial = (location.hash || '').replace(/^#/, '') || (isAdmin ? 'reservas' : 'reservar');
     setView(initial, false);
