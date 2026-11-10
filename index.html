@@ -283,6 +283,152 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity: .7; }
 .tbl.busy .badge { opacity: 0; }
 .tbl.selected .lock { opacity: 0; }
 
+/* ---- booking basket / fly-to-cart ---- */
+body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
+.hint-card { color: var(--muted); font-size: 14px; margin: 4px 0 0; line-height: 1.4; }
+.basket-fab {
+  position: fixed;
+  z-index: 45;
+  right: 16px;
+  bottom: calc(var(--tabbar-h) + 12px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 32px);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 8px 8px 8px;
+  box-shadow: 0 10px 28px rgba(80, 55, 30, .12);
+  text-align: left;
+  font: inherit;
+  transition: background .2s, border-color .2s, padding .2s, left .2s;
+}
+.basket-main {
+  display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
+  border: 0; background: transparent; color: inherit; font: inherit;
+  text-align: left; padding: 0; cursor: pointer;
+}
+.basket-fab.has-item {
+  left: 16px;
+  right: 16px;
+  border-radius: 22px;
+  padding: 10px 10px 10px 10px;
+  background: var(--paper);
+  border-color: var(--accent-text);
+}
+.basket-fab[hidden] { display: none !important; }
+.basket-target {
+  position: relative;
+  flex: 0 0 44px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent-dim);
+  color: var(--accent-text);
+}
+.basket-fab.has-item .basket-target { background: var(--accent); color: var(--accent-ink); }
+.basket-target svg { width: 22px; height: 22px; }
+.basket-count {
+  position: absolute;
+  top: -5px; right: -5px;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 999px;
+  background: var(--accent-text);
+  color: #F6F0E6;
+  font-size: 11px; font-weight: 800;
+  display: none;
+  place-items: center;
+  line-height: 1;
+}
+.basket-fab.has-item .basket-count { display: grid; }
+.basket-copy { display: none; flex: 1; min-width: 0; flex-direction: column; gap: 1px; }
+.basket-fab.has-item .basket-copy { display: flex; }
+.basket-copy b { font-family: var(--display); font-size: 1rem; letter-spacing: -.03em; line-height: 1.1; }
+.basket-copy span { font-size: 11px; color: var(--muted); letter-spacing: 0; text-transform: none; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.basket-fab .fab-go {
+  display: none;
+  flex: 0 0 auto;
+  border: 0; border-radius: 999px;
+  background: var(--accent); color: var(--accent-ink);
+  font-weight: 700; font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  padding: 10px 12px; cursor: pointer;
+}
+.basket-fab.has-item .fab-go { display: inline-flex; }
+.basket-fab.pulse .basket-target { animation: basket-pulse .45s cubic-bezier(.2,1.4,.4,1); }
+@keyframes basket-pulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.fly-ghost {
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 80;
+  pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 58px; height: 58px; padding: 0 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -.03em;
+  box-shadow: 0 8px 20px rgba(59,107,18,.28);
+  will-change: transform, opacity;
+  white-space: nowrap;
+}
+.sr-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+.form-card label.consent, label.consent, .consent {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 13px; color: var(--ink); line-height: 1.45;
+  margin: 12px 0 16px; text-transform: none; letter-spacing: 0; font-weight: 500;
+  cursor: pointer;
+}
+.consent input {
+  appearance: none; -webkit-appearance: none;
+  width: 22px; height: 22px; flex: 0 0 22px;
+  border: 1.5px solid #C8BFB3; border-radius: 6px;
+  background: var(--paper); margin-top: 1px; cursor: pointer;
+}
+.consent input:checked {
+  background: var(--accent) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 8.2 6.4 11.2 12.5 4.8' fill='none' stroke='%231F2A0C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 14px 14px no-repeat;
+  border-color: var(--accent-text);
+}
+.form-card textarea, .sheet textarea {
+  border: 0; border-bottom: 1px solid var(--line); border-radius: 0;
+  padding: 10px 0; background: transparent; font-size: 16px; width: 100%;
+  color: var(--ink); min-height: 76px; resize: vertical; font-family: inherit;
+}
+.form-card textarea:focus, .sheet textarea:focus { outline: none; border-bottom-color: var(--accent-text); }
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 0; background: transparent; color: var(--accent-text);
+  font-size: 13px; font-weight: 600; padding: 0 0 12px; cursor: pointer;
+}
+.recap {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 16px; margin: 0 0 18px;
+}
+.recap h3 { margin: 0 0 4px; font-size: 1.35rem; }
+.recap p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+.confirm-hero { text-align: left; padding: 8px 0 6px; }
+.confirm-mark {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; margin: 0 0 16px;
+}
+.confirm-hero h1 { margin: 0 0 8px; font-size: clamp(2rem, 8vw, 2.8rem); line-height: .95; }
+.confirm-hero p { margin: 0 0 18px; color: var(--muted); font-size: 1rem; line-height: 1.45; }
+.sheet-actions { display: flex; gap: 8px; margin-top: 8px; }
+.sheet-actions .btn { width: auto; flex: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .tbl.just-picked, .basket-fab.pulse .basket-target { animation: none; }
+  .fly-ghost { display: none !important; }
+}
+
   </style>
 </head>
 <body>
@@ -493,16 +639,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity: .7; }
   <text x="918" y="230" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.2" fill="#5C4C3A">COCINA</text>
 </svg>
     </div>
-    <div id="book-ok" class="ok-box" role="status"></div>
-    <div id="sel-card" class="sel-card empty"><p data-i18n="pickTable">Toca una mesa libre en el plano.</p></div>
-    <form id="book-form" class="form-card">
-      <h2 data-i18n="yourDetails">Tus datos</h2>
-      <div class="row"><label for="book-name" data-i18n="name">Nombre</label><input id="book-name" name="name" autocomplete="name" required></div>
-      <div class="row"><label for="book-email" data-i18n="email">Correo</label><input id="book-email" name="email" type="email" autocomplete="email" required></div>
-      <div class="row"><label for="book-phone" data-i18n="phone">Teléfono</label><input id="book-phone" name="phone" type="tel" autocomplete="tel" required></div>
-      <p id="book-err" class="redeem-msg err"></p>
-      <button class="btn" type="submit" disabled data-i18n="confirm">Confirmar reserva</button>
-    </form>
+    <p class="hint-card" data-i18n="mapCartHint">Toca una mesa libre: se añadirá a Mi reserva.</p>
     <p class="footer-note">Vellia Cafeteria · Torrevieja</p>
   </main>
 
@@ -565,6 +702,58 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity: .7; }
       <ul id="admin-redeems" class="sub-list"></ul>
     </div>
   </main>
+
+  <main id="view-datos" class="view" hidden>
+    <button type="button" class="back-link" id="datos-back" data-i18n="backToMap">Volver al plano</button>
+    <div class="lead">
+      <h1 data-i18n="yourDetails">Tus datos</h1>
+      <p data-i18n="detailsLead">Completa tus datos para confirmar la reserva.</p>
+    </div>
+    <div id="datos-recap" class="recap"></div>
+    <form id="book-form" class="form-card" novalidate>
+      <div class="row"><label for="book-name" data-i18n="name">Nombre</label><input id="book-name" name="name" autocomplete="name" required></div>
+      <div class="row"><label for="book-phone" data-i18n="phone">Teléfono</label><input id="book-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required></div>
+      <div class="row"><label for="book-email" data-i18n="email">Correo</label><input id="book-email" name="email" type="email" autocomplete="email" required></div>
+      <div class="row"><label for="book-note" data-i18n="note">Nota (opcional)</label><textarea id="book-note" name="note" rows="3" maxlength="400"></textarea></div>
+      <label class="consent" for="book-privacy">
+        <input id="book-privacy" name="privacy" type="checkbox" required>
+        <span data-i18n="privacy">Acepto la política de privacidad y el uso de mis datos para gestionar esta reserva.</span>
+      </label>
+      <p id="book-err" class="redeem-msg err"></p>
+      <button class="btn" type="submit" data-i18n="confirm">Confirmar reserva</button>
+    </form>
+  </main>
+
+  <main id="view-confirmacion" class="view" hidden>
+    <div class="confirm-hero" id="confirm-hero"></div>
+    <button class="btn" type="button" id="confirm-new" data-i18n="newBooking">Nueva reserva</button>
+    <p class="footer-note">Vellia Cafeteria · Torrevieja</p>
+  </main>
+
+  <div class="basket-fab" id="basket-fab" hidden>
+    <button type="button" class="basket-main" id="basket-open" aria-controls="basket-modal">
+      <span class="basket-target" id="basket-target" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16l-1.2 11.2A2 2 0 0 1 16.8 20H7.2a2 2 0 0 1-2-1.8L4 7z"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>
+        <span class="basket-count" id="basket-count">0</span>
+      </span>
+      <span class="basket-copy" id="basket-copy"></span>
+    </button>
+    <button type="button" class="fab-go" id="basket-go" data-i18n="continueBtn">Continuar</button>
+  </div>
+  <div class="sr-live" id="basket-live" aria-live="polite"></div>
+
+  <div id="basket-modal" class="modal" hidden>
+    <div class="sheet" role="dialog" aria-labelledby="basket-title">
+      <h2 id="basket-title" class="serif" style="margin:0 0 8px;font-size:1.6rem;" data-i18n="myBooking">Mi reserva</h2>
+      <div id="basket-sheet-body"></div>
+      <div class="sheet-actions">
+        <button class="btn ghost" type="button" id="basket-remove" data-i18n="removeTable">Quitar</button>
+        <button class="btn ghost" type="button" id="basket-change" data-i18n="changeTable">Cambiar mesa</button>
+      </div>
+      <button class="btn" type="button" id="basket-continue" style="margin-top:10px;" data-i18n="continueBtn">Continuar</button>
+      <button class="btn ghost" type="button" id="basket-close" style="margin-top:8px;" data-i18n="closeBasket">Cerrar</button>
+    </div>
+  </div>
 
   <div id="checkout-modal" class="modal" hidden>
     <div class="sheet" role="dialog" aria-labelledby="checkout-title">
@@ -729,7 +918,24 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       needTable: 'Elige una mesa libre.',
       needPlan: 'Elige un plan.',
       people: 'pers.',
-      install: 'Instalar app'
+      install: 'Instalar app',
+      myBooking: 'Mi reserva',
+      continueBtn: 'Continuar',
+      removeTable: 'Quitar',
+      changeTable: 'Cambiar mesa',
+      basketEmpty: 'Aún no has elegido una mesa. Tócala en el plano.',
+      mapCartHint: 'Toca una mesa libre: se añadirá a Mi reserva.',
+      note: 'Nota (opcional)',
+      privacy: 'Acepto la política de privacidad y el uso de mis datos para gestionar esta reserva.',
+      needPrivacy: 'Debes aceptar la política de privacidad.',
+      needEmail: 'Introduce un correo válido.',
+      needPhone: 'Introduce un teléfono válido.',
+      detailsLead: 'Completa tus datos para confirmar la reserva.',
+      backToMap: 'Volver al plano',
+      newBooking: 'Nueva reserva',
+      addedLive: 'Mesa {id} añadida a tu reserva.',
+      seatsN: '{n} plazas',
+      closeBasket: 'Cerrar'
     },
     en: {
       tagline: 'Torrevieja',
@@ -808,7 +1014,24 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       needTable: 'Please choose a free table.',
       needPlan: 'Please choose a plan.',
       people: 'ppl.',
-      install: 'Install app'
+      install: 'Install app',
+      myBooking: 'My booking',
+      continueBtn: 'Continue',
+      removeTable: 'Remove',
+      changeTable: 'Change table',
+      basketEmpty: 'You have not chosen a table yet. Tap one on the plan.',
+      mapCartHint: 'Tap a free table to add it to My booking.',
+      note: 'Note (optional)',
+      privacy: 'I accept the privacy policy and the use of my data to manage this booking.',
+      needPrivacy: 'Please accept the privacy policy.',
+      needEmail: 'Please enter a valid email address.',
+      needPhone: 'Please enter a valid phone number.',
+      detailsLead: 'Fill in your details to confirm the booking.',
+      backToMap: 'Back to the plan',
+      newBooking: 'New booking',
+      addedLive: 'Table {id} added to your booking.',
+      seatsN: '{n} seats',
+      closeBasket: 'Close'
     },
     ru: {
       tagline: 'Торревьеха',
@@ -887,7 +1110,24 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       needTable: 'Выберите свободный стол.',
       needPlan: 'Выберите план.',
       people: 'чел.',
-      install: 'Установить'
+      install: 'Установить',
+      myBooking: 'Моя бронь',
+      continueBtn: 'Продолжить',
+      removeTable: 'Убрать',
+      changeTable: 'Сменить стол',
+      basketEmpty: 'Стол ещё не выбран. Нажмите свободный стол на плане.',
+      mapCartHint: 'Нажмите свободный стол — он попадёт в «Моя бронь».',
+      note: 'Комментарий (необязательно)',
+      privacy: 'Я принимаю политику конфиденциальности и обработку моих данных для этой брони.',
+      needPrivacy: 'Нужно принять политику конфиденциальности.',
+      needEmail: 'Укажите корректный адрес почты.',
+      needPhone: 'Укажите корректный телефон.',
+      detailsLead: 'Заполните данные, чтобы подтвердить бронь.',
+      backToMap: 'К плану зала',
+      newBooking: 'Новая бронь',
+      addedLive: 'Стол {id} добавлен в бронь.',
+      seatsN: '{n} мест',
+      closeBasket: 'Закрыть'
     }
   };
 
@@ -1016,7 +1256,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     document.querySelectorAll('.lang button').forEach(function (b) {
       b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
     });
-    var titleMap = { reservar: 'Reservar mesa', suscripcion: 'Suscripción café', pedir: 'Pedir' };
+    var titleMap = { reservar: 'Reservar mesa', suscripcion: 'Suscripción café', pedir: 'Pedir', datos: 'Tus datos', confirmacion: 'Reserva confirmada' };
     var page = isAdmin ? 'Administración' : (titleMap[state.view] || 'Vellia Cafeteria');
     document.title = 'Vellia Cafeteria — ' + page;
     renderAll();
@@ -1041,7 +1281,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       b.addEventListener('click', function () {
         if (b.disabled) return;
         state.slot = slot;
-        state.table = null;
+        ensureTableValid();
         renderSlots();
         renderMap();
         renderSelection();
@@ -1075,22 +1315,170 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     return 'zoneGrandes';
   }
 
-  function renderSelection() {
-    var card = document.getElementById('sel-card');
-    var form = document.getElementById('book-form');
-    if (!card) return;
+  function tableStillValid() {
+    if (!state.table || !state.date || !state.slot) return false;
+    var meta = TABLE_BY_ID[state.table];
+    if (!meta) return false;
+    if (isOccupied(state.table, state.date, state.slot)) return false;
+    if (state.guests > meta.cap) return false;
+    return true;
+  }
+  function ensureTableValid() {
+    if (state.table && !tableStillValid()) state.table = null;
+  }
+
+  function recapHtml() {
+    if (!state.table) return '';
+    var meta = TABLE_BY_ID[state.table];
+    return '<h3>' + t('selected', { id: state.table }) + '</h3>' +
+      '<p>' + t(zoneKey(meta.zone)) + ' · ' + t('seatsN', { n: meta.cap }) + '</p>' +
+      '<p>' + fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests) + '</p>';
+  }
+
+  function updateBasketFab() {
+    var fab = document.getElementById('basket-fab');
+    var count = document.getElementById('basket-count');
+    var copy = document.getElementById('basket-copy');
+    var go = document.getElementById('basket-go');
+    if (!fab) return;
+    var show = !isAdmin && state.view === 'reservar';
+    fab.hidden = !show;
+    document.body.classList.toggle('has-basket-fab', show);
+    var has = !!state.table;
+    fab.classList.toggle('has-item', has);
+    var openBtn = document.getElementById('basket-open');
+    if (openBtn) openBtn.setAttribute('aria-label', t('myBooking') + (has ? ', 1' : ''));
+    if (count) count.textContent = has ? '1' : '0';
+    if (copy) {
+      if (has) {
+        var meta = TABLE_BY_ID[state.table];
+        copy.innerHTML = '<b>' + t('selected', { id: state.table }) + '</b><span>' +
+          fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests) +
+          (meta ? ' · ' + t('seatsN', { n: meta.cap }) : '') + '</span>';
+      } else {
+        copy.innerHTML = '';
+      }
+    }
+    if (go) go.hidden = !has;
+  }
+
+  function renderBasketSheet() {
+    var body = document.getElementById('basket-sheet-body');
+    if (!body) return;
+    var remove = document.getElementById('basket-remove');
+    var change = document.getElementById('basket-change');
+    var cont = document.getElementById('basket-continue');
     if (!state.table) {
-      card.classList.add('empty');
-      card.innerHTML = '<p>' + t('pickTable') + '</p>';
-      if (form) form.querySelector('.btn').disabled = true;
+      body.innerHTML = '<p class="muted">' + t('basketEmpty') + '</p>';
+      if (remove) remove.disabled = true;
+      if (change) change.disabled = true;
+      if (cont) cont.disabled = true;
       return;
     }
-    var meta = TABLE_BY_ID[state.table];
-    card.classList.remove('empty');
-    card.innerHTML = '<h2>' + t('selected', { id: state.table }) + '</h2>' +
-      '<p>' + t(zoneKey(meta.zone)) + ' · ' + capLabel(meta.cap) + '</p>' +
-      '<p class="muted">' + fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests) + '</p>';
-    if (form) form.querySelector('.btn').disabled = false;
+    body.innerHTML = recapHtml();
+    if (remove) remove.disabled = false;
+    if (change) change.disabled = false;
+    if (cont) cont.disabled = false;
+  }
+
+  function renderSelection() {
+    updateBasketFab();
+    renderBasketSheet();
+    var recap = document.getElementById('datos-recap');
+    if (recap) recap.innerHTML = recapHtml() || '<p class="muted">' + t('needTable') + '</p>';
+  }
+
+  function openBasket() {
+    renderBasketSheet();
+    document.getElementById('basket-modal').hidden = false;
+  }
+  function closeBasket() {
+    var m = document.getElementById('basket-modal');
+    if (m) m.hidden = true;
+  }
+  function goToDetails() {
+    if (!tableStillValid()) {
+      state.table = null;
+      renderSelection();
+      closeBasket();
+      setView('reservar');
+      return;
+    }
+    closeBasket();
+    setView('datos');
+  }
+
+  function preferReducedMotion() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  var flyAnim = null;
+  function pulseBasket() {
+    var fab = document.getElementById('basket-fab');
+    if (!fab) return;
+    fab.classList.remove('pulse');
+    void fab.offsetWidth;
+    fab.classList.add('pulse');
+    setTimeout(function () { fab.classList.remove('pulse'); }, 500);
+  }
+
+  function flyTableToBasket(g, id) {
+    var live = document.getElementById('basket-live');
+    if (live) live.textContent = t('addedLive', { id: id });
+    updateBasketFab();
+    var target = document.getElementById('basket-target');
+    if (!g || !target || preferReducedMotion()) {
+      pulseBasket();
+      return;
+    }
+    var fromEl = g.querySelector('.top') || g.querySelector('.sofa-body') || g;
+    var from = fromEl.getBoundingClientRect();
+    var to = target.getBoundingClientRect();
+    if (!from.width || !to.width) { pulseBasket(); return; }
+    if (flyAnim) { try { flyAnim.cancel(); } catch (e) {} flyAnim = null; }
+    document.querySelectorAll('.fly-ghost').forEach(function (n) { n.remove(); });
+    var ghost = document.createElement('div');
+    ghost.className = 'fly-ghost';
+    ghost.textContent = t('selected', { id: id });
+    document.body.appendChild(ghost);
+    var sx = from.left + from.width / 2;
+    var sy = from.top + from.height / 2;
+    var ex = to.left + to.width / 2;
+    var ey = to.top + to.height / 2;
+    var cx = (sx + ex) / 2 + (ex > sx ? -48 : 48);
+    var cy = Math.min(sy, ey) - Math.max(90, Math.abs(ex - sx) * 0.28);
+    function q(t, a, b, c) { var u = 1 - t; return u * u * a + 2 * u * t * b + t * t * c; }
+    var frames = [];
+    var steps = 24;
+    for (var i = 0; i <= steps; i++) {
+      var tt = i / steps;
+      var x = q(tt, sx, cx, ex);
+      var y = q(tt, sy, cy, ey);
+      var sc = tt < 0.15 ? 0.86 + tt * 1.1 : (tt < 0.75 ? 1.02 - (tt - 0.15) * 0.25 : 0.87 - (tt - 0.75) * 1.6);
+      if (sc < 0.28) sc = 0.28;
+      var op = tt > 0.88 ? 1 - (tt - 0.88) / 0.12 : 1;
+      frames.push({
+        transform: 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%) scale(' + sc + ')',
+        opacity: String(op),
+        offset: tt
+      });
+    }
+    var dur = typeof window.__velliaFlyMs === 'number' ? window.__velliaFlyMs : 720;
+    flyAnim = ghost.animate(frames, { duration: dur, easing: 'cubic-bezier(.2,.72,.12,1)', fill: 'forwards' });
+    flyAnim.onfinish = function () {
+      ghost.remove();
+      flyAnim = null;
+      pulseBasket();
+    };
+    flyAnim.oncancel = function () { if (ghost.parentNode) ghost.remove(); };
+  }
+
+  function validEmail(s) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
+  }
+  function validPhone(s) {
+    var d = String(s).replace(/\D/g, '');
+    return d.length >= 8 && d.length <= 15;
   }
 
   function confirmBooking(ev) {
@@ -1098,6 +1486,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var name = document.getElementById('book-name').value.trim();
     var email = document.getElementById('book-email').value.trim();
     var phone = document.getElementById('book-phone').value.trim();
+    var noteEl = document.getElementById('book-note');
+    var note = noteEl ? noteEl.value.trim() : '';
+    var privacyEl = document.getElementById('book-privacy');
     var err = document.getElementById('book-err');
     err.textContent = '';
     if (!state.table || !state.date || !state.slot) { err.textContent = t('needTable'); return; }
@@ -1105,22 +1496,34 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       err.textContent = t('needTable'); return;
     }
     if (!name || !email || !phone) { err.textContent = t('needFields'); return; }
+    if (!validEmail(email)) { err.textContent = t('needEmail'); return; }
+    if (!validPhone(phone)) { err.textContent = t('needPhone'); return; }
+    if (!privacyEl || !privacyEl.checked) { err.textContent = t('needPrivacy'); return; }
+    var bookedTable = state.table;
+    var bookedDate = state.date;
+    var bookedSlot = state.slot;
+    var bookedGuests = state.guests;
     var list = bookings();
     list.push({
-      id: uid('bk'), table: state.table, date: state.date, slot: state.slot,
-      guests: state.guests, name: name, email: email, phone: phone, created: madridISODate() + ' ' + madridHM()
+      id: uid('bk'), table: bookedTable, date: bookedDate, slot: bookedSlot,
+      guests: bookedGuests, name: name, email: email, phone: phone, note: note,
+      created: madridISODate() + ' ' + madridHM()
     });
     save(BOOK_KEY, list);
-    var ok = document.getElementById('book-ok');
-    ok.classList.add('show');
-    ok.innerHTML = '<strong>' + t('booked') + '</strong><br>' + t('bookedBody', {
-      id: state.table, date: fmtDate(state.date), slot: state.slot, guests: guestsLabel(state.guests)
-    });
     state.table = null;
+    ev.target.reset();
     renderMap();
     renderSelection();
-    ev.target.reset();
-    ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    var hero = document.getElementById('confirm-hero');
+    if (hero) {
+      hero.innerHTML = '<div class="confirm-mark" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.2 17 19 7"/></svg></div>' +
+        '<h1>' + t('booked') + '</h1>' +
+        '<div class="recap">' + '<h3>' + t('selected', { id: bookedTable }) + '</h3>' +
+        '<p>' + t('bookedBody', { id: bookedTable, date: fmtDate(bookedDate), slot: bookedSlot, guests: guestsLabel(bookedGuests) }) + '</p>' +
+        (note ? '<p class="muted">' + note.replace(/[<>&]/g, function (c) { return ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]); }) + '</p>' : '') +
+        '</div>';
+    }
+    setView('confirmacion');
   }
 
   function currentGuestSub() {
@@ -1298,20 +1701,23 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   function setView(name, push) {
-    var guestViews = { reservar: 1, suscripcion: 1, pedir: 1 };
+    var guestViews = { reservar: 1, suscripcion: 1, pedir: 1, datos: 1, confirmacion: 1 };
     var adminViews = { reservas: 1, suscriptores: 1, canjear: 1 };
     if (isAdmin) {
       if (guestViews[name]) name = name === 'suscripcion' ? 'suscriptores' : 'reservas';
       if (!adminViews[name]) name = 'reservas';
     } else {
       if (!guestViews[name]) name = 'reservar';
+      if (name === 'datos' && !tableStillValid()) name = 'reservar';
     }
     state.view = name;
     document.querySelectorAll('main.view').forEach(function (m) {
       m.hidden = m.id !== 'view-' + name;
     });
     document.querySelectorAll('.tabbar button[data-view]').forEach(function (b) {
-      b.classList.toggle('active', b.getAttribute('data-view') === name);
+      var tab = b.getAttribute('data-view');
+      var onReserveFlow = (name === 'reservar' || name === 'datos' || name === 'confirmacion');
+      b.classList.toggle('active', tab === name || (tab === 'reservar' && onReserveFlow));
     });
     document.querySelectorAll('.admin-tabs button').forEach(function (b) {
       b.setAttribute('aria-pressed', b.getAttribute('data-view') === name ? 'true' : 'false');
@@ -1322,6 +1728,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       if (location.hash !== '#' + name) history.replaceState(null, '', url);
     }
     if (name === 'suscripcion') { renderPlans(); renderPass(); }
+    if (name === 'datos') renderSelection();
+    if (name !== 'reservar') closeBasket();
+    updateBasketFab();
     if (isAdmin) renderAdmin();
   }
 
@@ -1365,7 +1774,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       if (slotPast(state.date, state.slot)) {
         state.slot = SLOTS.filter(function (s) { return !slotPast(state.date, s); })[0] || state.slot;
       }
-      state.table = null;
+      ensureTableValid();
       renderAll();
     });
     document.getElementById('guest-minus').addEventListener('click', function () {
@@ -1383,7 +1792,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       if (!g) return;
       var id = g.getAttribute('data-id');
       if (g.classList.contains('busy') || g.classList.contains('small')) return;
+      var replaced = state.table && state.table !== id;
+      if (state.table === id) return;
       state.table = id;
+      closeBasket();
       renderMap();
       document.querySelectorAll('.tbl[data-id="'+id+'"]').forEach(function (el) {
         el.classList.remove('just-picked');
@@ -1392,7 +1804,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         setTimeout(function () { el.classList.remove('just-picked'); }, 420);
       });
       renderSelection();
-      document.getElementById('sel-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      flyTableToBasket(g, id);
     });
     document.getElementById('hall-map').addEventListener('keydown', function (ev) {
       if (ev.key !== 'Enter' && ev.key !== ' ') return;
@@ -1402,6 +1814,29 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       g.click();
     });
     document.getElementById('book-form').addEventListener('submit', confirmBooking);
+    document.getElementById('basket-open').addEventListener('click', function () {
+      if (state.table) openBasket();
+    });
+    document.getElementById('basket-go').addEventListener('click', function (e) {
+      e.preventDefault();
+      goToDetails();
+    });
+    document.getElementById('basket-continue').addEventListener('click', goToDetails);
+    document.getElementById('basket-close').addEventListener('click', closeBasket);
+    document.getElementById('basket-modal').addEventListener('click', function (e) {
+      if (e.target.id === 'basket-modal') closeBasket();
+    });
+    document.getElementById('basket-remove').addEventListener('click', function () {
+      state.table = null;
+      renderMap();
+      renderSelection();
+      closeBasket();
+    });
+    document.getElementById('basket-change').addEventListener('click', function () {
+      closeBasket();
+    });
+    document.getElementById('datos-back').addEventListener('click', function () { setView('reservar'); });
+    document.getElementById('confirm-new').addEventListener('click', function () { setView('reservar'); });
     document.querySelectorAll('.tabbar button[data-view]').forEach(function (b) {
       b.addEventListener('click', function () {
         if (b.classList.contains('soon')) { setView('pedir'); return; }
