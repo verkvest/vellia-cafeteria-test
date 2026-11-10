@@ -29,6 +29,8 @@
   --accent-ink: #1F2A0C;
   --accent-text: #3B6B12;
   --accent-dim: #E4F29A;
+  --picked: #2F6B1A;
+  --picked-ink: #FFFFFF;
   --busy: #C53A24;
   --busy-ink: #8A2418;
   --busy-dim: #FBD9D0;
@@ -130,7 +132,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity: .7; }
 .legend .l-free i { background: var(--accent-dim); border-color: var(--accent-text); }
 .legend .l-busy i { background: var(--busy-dim); border-color: var(--busy); }
 .legend .l-small i { background: #F3EBE0; border-color: #9A9084; }
-.legend .l-sel i { background: var(--accent); border-color: #2C4A0C; }
+.legend .l-sel i { background: var(--picked); border-color: #1A3D0E; }
 .map-card {
   background: var(--paper);
   border: 1px solid var(--line);
@@ -146,29 +148,36 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity: .7; }
 .tbl { cursor: pointer; }
 .tbl .top { fill: var(--accent-dim); stroke: var(--accent-text); stroke-width: 2; filter: none; transition: filter .25s, stroke .2s, fill .2s, stroke-width .2s; }
 .tbl .inner { fill: none; stroke: rgba(59,107,18,.35); stroke-width: 1; }
-.tbl .lbl { font-family: var(--sans); font-weight: 700; fill: #2C4A0C; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
-.tbl .badge { font-family: var(--sans); font-weight: 600; fill: var(--accent-text); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.tbl .lbl { font-family: var(--sans); font-weight: 800; fill: #2C4A0C; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.tbl .badge, .tbl .check-mark { font-family: var(--sans); font-weight: 800; fill: #2C4A0C; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.tbl .seat-pill { pointer-events: none; }
+.tbl .pill-bg { fill: #FFFBF4; stroke: #3B6B12; stroke-width: 1.2; }
+.tbl .check-mark, .tbl .check-icon { opacity: 0; }
 .tbl .hit { fill: transparent; }
 .tbl.busy .top { fill: var(--busy-dim); stroke: var(--busy); filter: none; }
 .tbl.busy .inner { stroke: rgba(197,58,36,.4); }
 .tbl.busy .lbl { fill: var(--busy-ink); }
-.tbl.busy .badge { fill: var(--busy); }
+.tbl.busy .seat-pill { opacity: 0; }
 .tbl.small .top { fill: #F3EBE0; stroke: #9A9084; stroke-dasharray: 4 3; filter: none; }
 .tbl.small .inner { stroke: #C8BFB3; }
 .tbl.small .lbl, .tbl.small .badge { fill: #5A534B; }
-.tbl.selected .top { fill: var(--accent); stroke: #2C4A0C; stroke-width: 3; filter: drop-shadow(0 2px 6px rgba(59,107,18,.28)); }
+.tbl.selected .top { fill: var(--picked); stroke: #1A3D0E; stroke-width: 3; filter: drop-shadow(0 3px 8px rgba(47,107,26,.45)); }
+.tbl.selected .inner { stroke: rgba(255,255,255,.4); }
 .tbl { -webkit-tap-highlight-color: transparent; }
 .tbl:focus { outline: none; }
-.tbl:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; }
-.tbl.selected .lbl { fill: var(--accent-ink); }
-.tbl.selected .badge { fill: #2C4A0C; }
-.tbl.just-picked { animation: pick .38s cubic-bezier(.2,1.4,.4,1); transform-box: fill-box; transform-origin: center; }
-@keyframes pick { 0% { transform: scale(.9); } 70% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.tbl:focus-visible { outline: 2px solid var(--picked); outline-offset: 4px; }
+.tbl.selected .lbl { fill: var(--picked-ink); stroke: var(--picked); }
+.tbl.selected .pill-bg { fill: #1F4A12; stroke: #FFFFFF; stroke-width: 1.4; }
+.tbl.selected .badge { opacity: 0; }
+.tbl.selected .check-mark, .tbl.selected .check-icon { opacity: 1; }
+.tbl.selected .check-mark { fill: #FFFFFF; }
+.tbl.just-picked { animation: pick .42s cubic-bezier(.2,1.4,.4,1); transform-box: fill-box; transform-origin: center; }
+@keyframes pick { 0% { transform: scale(.82); } 55% { transform: scale(1.14); } 100% { transform: scale(1); } }
 .tbl.busy, .tbl.small { cursor: not-allowed; }
 .armchair .seat, .armchair .back { fill: none; stroke: #8A7358; stroke-width: 1.15; }
 .sofa-body { fill: var(--accent-dim); stroke: var(--accent-text); stroke-width: 1.6; }
 .tbl.busy .sofa-body { fill: var(--busy-dim); stroke: var(--busy); }
-.tbl.selected .sofa-body { fill: var(--accent); stroke: #2C4A0C; stroke-width: 2.4; }
+.tbl.selected .sofa-body { fill: var(--picked); stroke: #1A3D0E; stroke-width: 2.4; }
 .tbl.small .sofa-body { fill: #F3EBE0; stroke: #9A9084; stroke-dasharray: 4 3; }
 .stool-decor { fill: #F7EFE3; stroke: #8A7358; stroke-width: 1.15; pointer-events: none; }
 .note { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
@@ -283,7 +292,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { opacity: .7; }
 }
 .tbl .lock { opacity: 0; transition: opacity .2s; }
 .tbl.busy .lock { opacity: 1; }
-.tbl.busy .badge { opacity: 0; }
 .tbl.selected .lock { opacity: 0; }
 
 /* ---- booking basket / fly-to-cart ---- */
@@ -331,15 +339,15 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
   background: var(--accent-dim);
   color: var(--accent-text);
 }
-.basket-fab.has-item .basket-target { background: var(--accent); color: var(--accent-ink); }
+.basket-fab.has-item .basket-target { background: var(--picked); color: var(--picked-ink); }
 .basket-target svg { width: 22px; height: 22px; }
 .basket-count {
   position: absolute;
   top: -5px; right: -5px;
   min-width: 18px; height: 18px; padding: 0 5px;
   border-radius: 999px;
-  background: var(--accent-text);
-  color: #F6F0E6;
+  background: var(--picked);
+  color: var(--picked-ink);
   font-size: 11px; font-weight: 800;
   display: none;
   place-items: center;
@@ -373,13 +381,13 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
   display: flex; align-items: center; justify-content: center;
   min-width: 58px; height: 58px; padding: 0 12px;
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--picked);
+  color: var(--picked-ink);
   font-family: var(--display);
   font-weight: 700;
   font-size: 13px;
   letter-spacing: -.03em;
-  box-shadow: 0 8px 20px rgba(59,107,18,.28);
+  box-shadow: 0 8px 20px rgba(47,107,26,.35);
   will-change: transform, opacity;
   white-space: nowrap;
 }
@@ -574,14 +582,24 @@ body.has-basket-fab { --basket-space: 88px; }
   }
   #hall-map .tbl .lbl,
   #hall-map-admin .tbl .lbl {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 800;
     paint-order: stroke fill;
     stroke: #FFFBF4;
-    stroke-width: 6px;
+    stroke-width: 5px;
+  }
+  #hall-map .tbl.selected .lbl,
+  #hall-map-admin .tbl.selected .lbl {
+    stroke: var(--picked);
+    stroke-width: 5px;
+    fill: #FFFFFF;
   }
   #hall-map .tbl .badge,
-  #hall-map-admin .tbl .badge { font-size: 22px; font-weight: 700; }
+  #hall-map .tbl .check-mark,
+  #hall-map-admin .tbl .badge,
+  #hall-map-admin .tbl .check-mark { font-size: 16px; font-weight: 800; }
+  #hall-map .tbl .pill-bg,
+  #hall-map-admin .tbl .pill-bg { x: -11px; y: -8px; width: 22px; height: 16px; rx: 8px; }
   #hall-map text.upright,
   #hall-map-admin text.upright { font-size: 24px; font-weight: 700; letter-spacing: 0.8px; }
   #hall-map .tbl[data-cap="2"] .top,
@@ -698,7 +716,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="120" cy="128" r="52"/>
     <circle class="top" cx="120" cy="128" r="30"/>
     <circle class="inner" cx="120" cy="128" r="22"/>
-    <g class="label-stack"><text class="lbl" x="120" y="122" font-size="18">V1</text><text class="badge" x="120" y="136" font-size="11">4</text></g>
+    <g class="label-stack"><text class="lbl" x="120" y="128">V1</text><g class="seat-pill" transform="translate(120, 156)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">4</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(120.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="V2" data-cap="4" tabindex="0" role="button">
@@ -706,7 +724,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="222" cy="128" r="52"/>
     <circle class="top" cx="222" cy="128" r="30"/>
     <circle class="inner" cx="222" cy="128" r="22"/>
-    <g class="label-stack"><text class="lbl" x="222" y="122" font-size="18">V2</text><text class="badge" x="222" y="136" font-size="11">4</text></g>
+    <g class="label-stack"><text class="lbl" x="222" y="128">V2</text><g class="seat-pill" transform="translate(222, 156)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">4</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(222.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M1" data-cap="2" tabindex="0" role="button">
@@ -714,7 +732,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="390" cy="128" r="44"/>
     <circle class="top" cx="390" cy="128" r="22"/>
     <circle class="inner" cx="390" cy="128" r="14"/>
-    <g class="label-stack"><text class="lbl" x="390" y="123" font-size="15">M1</text><text class="badge" x="390" y="135" font-size="10">2</text></g>
+    <g class="label-stack"><text class="lbl" x="390" y="128">M1</text><g class="seat-pill" transform="translate(390, 156)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">2</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(390.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M2" data-cap="2" tabindex="0" role="button">
@@ -722,7 +740,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="490" cy="128" r="44"/>
     <circle class="top" cx="490" cy="128" r="22"/>
     <circle class="inner" cx="490" cy="128" r="14"/>
-    <g class="label-stack"><text class="lbl" x="490" y="123" font-size="15">M2</text><text class="badge" x="490" y="135" font-size="10">2</text></g>
+    <g class="label-stack"><text class="lbl" x="490" y="128">M2</text><g class="seat-pill" transform="translate(490, 156)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">2</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(490.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M3" data-cap="2" tabindex="0" role="button">
@@ -730,7 +748,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="636" cy="128" r="44"/>
     <circle class="top" cx="636" cy="128" r="22"/>
     <circle class="inner" cx="636" cy="128" r="14"/>
-    <g class="label-stack"><text class="lbl" x="636" y="123" font-size="15">M3</text><text class="badge" x="636" y="135" font-size="10">2</text></g>
+    <g class="label-stack"><text class="lbl" x="636" y="128">M3</text><g class="seat-pill" transform="translate(636, 156)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">2</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(636.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M4" data-cap="2" tabindex="0" role="button">
@@ -738,7 +756,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="726" cy="128" r="44"/>
     <circle class="top" cx="726" cy="128" r="22"/>
     <circle class="inner" cx="726" cy="128" r="14"/>
-    <g class="label-stack"><text class="lbl" x="726" y="123" font-size="15">M4</text><text class="badge" x="726" y="135" font-size="10">2</text></g>
+    <g class="label-stack"><text class="lbl" x="726" y="128">M4</text><g class="seat-pill" transform="translate(726, 156)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">2</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(726.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M5" data-cap="2" tabindex="0" role="button">
@@ -746,7 +764,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="846" cy="128" r="44"/>
     <circle class="top" cx="846" cy="128" r="22"/>
     <circle class="inner" cx="846" cy="128" r="14"/>
-    <g class="label-stack"><text class="lbl" x="846" y="123" font-size="15">M5</text><text class="badge" x="846" y="135" font-size="10">2</text></g>
+    <g class="label-stack"><text class="lbl" x="846" y="128">M5</text><g class="seat-pill" transform="translate(846, 156)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">2</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(846.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="M6" data-cap="2" tabindex="0" role="button">
@@ -754,7 +772,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="926" cy="128" r="44"/>
     <circle class="top" cx="926" cy="128" r="22"/>
     <circle class="inner" cx="926" cy="128" r="14"/>
-    <g class="label-stack"><text class="lbl" x="926" y="123" font-size="15">M6</text><text class="badge" x="926" y="135" font-size="10">2</text></g>
+    <g class="label-stack"><text class="lbl" x="926" y="128">M6</text><g class="seat-pill" transform="translate(926, 156)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">2</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(926.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl zone-s" data-id="S1" data-cap="4" tabindex="0" role="button">
@@ -763,7 +781,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <rect class="sofa-body" x="158" y="268" width="88" height="88" rx="3"/>
     <rect class="sofa-body" x="62" y="364" width="88" height="88" rx="3"/>
     <rect x="168" y="376" width="70" height="52" rx="1" fill="none" stroke="#8A7358" stroke-width="1.1"/>
-    <g class="label-stack"><text class="lbl" x="150" y="348" font-size="20">S1</text><text class="badge" x="150" y="366" font-size="11">4</text></g>
+    <g class="label-stack"><text class="lbl" x="150" y="350">S1</text><g class="seat-pill" transform="translate(150, 380)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">4</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(150.0,376.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="bar-decor" aria-hidden="true">
@@ -781,7 +799,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="600" cy="430" r="60"/>
     <circle class="top" cx="600" cy="430" r="38"/>
     <circle class="inner" cx="600" cy="430" r="30"/>
-    <g class="label-stack"><text class="lbl" x="600" y="424" font-size="18">G1</text><text class="badge" x="600" y="438" font-size="11">4</text></g>
+    <g class="label-stack"><text class="lbl" x="600" y="430">G1</text><g class="seat-pill" transform="translate(600, 458)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">4</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(600.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <g class="tbl" data-id="G2" data-cap="4" tabindex="0" role="button">
@@ -789,7 +807,7 @@ body.has-basket-fab { --basket-space: 88px; }
     <circle class="hit" cx="820" cy="430" r="60"/>
     <circle class="top" cx="820" cy="430" r="38"/>
     <circle class="inner" cx="820" cy="430" r="30"/>
-    <g class="label-stack"><text class="lbl" x="820" y="424" font-size="18">G2</text><text class="badge" x="820" y="438" font-size="11">4</text></g>
+    <g class="label-stack"><text class="lbl" x="820" y="430">G2</text><g class="seat-pill" transform="translate(820, 458)"><rect class="pill-bg" x="-9" y="-7" width="18" height="14" rx="7"/><text class="badge" x="0" y="0.5">4</text><path class="check-icon" d="M-4.2 0.2 L-1.2 3.4 L5.2 -3.6" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g></g>
     <g class="lock" transform="translate(820.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#C53A24" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#C53A24" stroke-width="1.5"/></g>
   </g>
   <path d="M960 470 V560" stroke="#F3E6D2" stroke-width="3"/>
