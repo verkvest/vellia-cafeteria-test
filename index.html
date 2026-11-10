@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c0b09">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Vellia Cafeteria">
+  <meta name="application-name" content="Vellia Cafeteria">
+  <meta name="description" content="Vellia Cafeteria — reserva de mesas y suscripción de café en Torrevieja.">
+  <title>Vellia Cafeteria</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #0c0b09;
+  --bg2: #13110f;
+  --surface: #181614;
+  --ink: #f4f0e6;
+  --muted: #9b9488;
+  --line: rgba(244, 240, 230, .12);
+  --accent: #c8f04c;
+  --accent-ink: #10140a;
+  --accent-dim: rgba(200, 240, 76, .14);
+  --busy: #ff6b4a;
+  --busy-dim: rgba(255, 107, 74, .14);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+  --tabbar-h: calc(64px + var(--safe-b));
+  --display: Unbounded, "Space Grotesk", system-ui, sans-serif;
+  --sans: "Space Grotesk", system-ui, sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+html { height: 100%; background: var(--bg); }
+body {
+  min-height: 100%;
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--bg);
+  padding-top: var(--safe-t);
+  padding-bottom: var(--tabbar-h);
+  letter-spacing: -0.01em;
+}
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed; inset: 0; z-index: 80; opacity: .07;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.9'/></svg>");
+}
+h1, h2, h3, .brand-name, .serif, .display { font-family: var(--display); font-weight: 700; letter-spacing: -0.04em; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--accent); }
+.app-header {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  background: rgba(12, 11, 9, .86);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; flex: 1; min-width: 0; }
+.brand img { width: 34px; height: 34px; border-radius: 9px; }
+.brand-name { font-size: 0.92rem; font-weight: 700; line-height: 1.05; text-transform: uppercase; }
+.brand-name small { display: block; font-family: var(--sans); font-weight: 500; font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.lang { display: flex; gap: 4px; }
+.lang button {
+  border: 1px solid var(--line); background: transparent; color: var(--muted);
+  padding: 6px 9px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+  border-radius: 999px; cursor: pointer;
+}
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.admin-chip {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 5px 8px; white-space: nowrap;
+}
+.app-header { flex-wrap: wrap; }
+.is-admin .brand-name small { display: none; }
+main { padding: 18px 16px 24px; max-width: 560px; margin: 0 auto; }
+.view[hidden], [hidden] { display: none !important; }
+.lead { margin: 0 0 18px; }
+.lead h1 { margin: 0 0 8px; font-size: clamp(2rem, 9vw, 3rem); line-height: .92; }
+.lead p { margin: 0; color: var(--muted); font-size: .98rem; line-height: 1.4; max-width: 22em; }
+.filters {
+  display: grid; grid-template-columns: 1fr auto; gap: 18px 16px;
+  align-items: end; margin-bottom: 16px;
+  padding: 0 0 16px; border-bottom: 1px solid var(--line);
+}
+.filters .field.guests { grid-column: auto; }
+label.field { display: flex; flex-direction: column; gap: 6px; font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+label.field input, label.field select {
+  border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 8px 0;
+  background: transparent; font-size: 16px; font-weight: 500; color: var(--ink);
+  font-family: var(--display); letter-spacing: -0.03em;
+}
+label.field input:focus { outline: none; border-bottom-color: var(--accent); }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(.7); }
+.stepper { display: flex; align-items: center; gap: 8px; }
+.stepper button {
+  width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line);
+  background: transparent; font-size: 20px; cursor: pointer; color: var(--ink);
+}
+.stepper button:hover { border-color: var(--accent); color: var(--accent); }
+.stepper output {
+  min-width: 3.2rem; text-align: center; font-family: var(--display);
+  font-size: 1.7rem; font-weight: 700; letter-spacing: -0.04em;
+  text-transform: none; color: var(--ink);
+}
+.slots { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; margin: 0 0 8px; scrollbar-width: thin; }
+.slots button {
+  flex: 0 0 auto; border: 1px solid var(--line); background: transparent; color: var(--ink);
+  border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.slots button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.slots button:disabled { opacity: .28; cursor: not-allowed; }
+.legend {
+  display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 11px; color: var(--muted);
+  margin: 0 0 12px; align-items: center; letter-spacing: .04em; text-transform: uppercase;
+}
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; border: 1.5px solid; }
+.legend .l-free i { background: var(--accent-dim); border-color: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.legend .l-busy i { background: var(--busy-dim); border-color: var(--busy); }
+.legend .l-small i { background: transparent; border-color: #6a655c; }
+.legend .l-sel i { background: var(--accent); border-color: var(--accent); }
+.map-card {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 8px 8px; margin-bottom: 18px;
+  box-shadow: none;
+}
+.map-card .map-caption {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 0 6px 8px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+}
+.map-card svg { width: 100%; height: auto; display: block; }
+.tbl { cursor: pointer; }
+.tbl .top { fill: var(--accent-dim); stroke: var(--accent); stroke-width: 1.8; filter: drop-shadow(0 0 5px rgba(200,240,76,.55)); transition: filter .25s, stroke .2s, fill .2s; }
+.tbl .inner { fill: none; stroke: rgba(200,240,76,.4); stroke-width: 1; }
+.tbl .lbl { font-family: var(--sans); font-weight: 700; fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.tbl .badge { font-family: var(--sans); font-weight: 600; fill: var(--accent); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.tbl .hit { fill: transparent; }
+.tbl.busy .top { fill: var(--busy-dim); stroke: var(--busy); filter: none; }
+.tbl.busy .inner { stroke: rgba(255,107,74,.35); }
+.tbl.busy .lbl { fill: #f0c8be; }
+.tbl.busy .badge { fill: var(--busy); }
+.tbl.small .top { fill: transparent; stroke: #5c574e; stroke-dasharray: 4 3; filter: none; }
+.tbl.small .inner { stroke: #3f3c36; }
+.tbl.small .lbl, .tbl.small .badge { fill: #6e6a62; }
+.tbl.selected .top { fill: rgba(200,240,76,.2); stroke: var(--accent); stroke-width: 2.6; filter: drop-shadow(0 0 9px rgba(200,240,76,.85)); }
+.tbl.just-picked { animation: pick .38s cubic-bezier(.2,1.4,.4,1); transform-box: fill-box; transform-origin: center; }
+@keyframes pick { 0% { transform: scale(.9); } 70% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.tbl.busy, .tbl.small { cursor: not-allowed; }
+.armchair .seat, .armchair .back { fill: none; stroke: #8a8478; stroke-width: 1.15; }
+.sofa-body { fill: #1f1c19; stroke: #c8f04c; stroke-width: 1.4; }
+.stool-decor { fill: none; stroke: #6a655c; stroke-width: 1.15; pointer-events: none; }
+.note { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
+.sel-card, .form-card, .plan, .pass, .admin-card, .soon-card, .checkout {
+  background: transparent; border: 0; border-top: 1px solid var(--line);
+  border-radius: 0; padding: 16px 0; box-shadow: none; margin-bottom: 0;
+}
+.sel-card h2, .form-card h2, .pass h2, .admin-card h2 {
+  margin: 0 0 6px; font-size: 2rem; font-weight: 700; line-height: 1;
+}
+.sel-card.empty { color: var(--muted); border: 0; padding-top: 8px; }
+.form-card .row, .admin-card .row, .sheet .row { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+.form-card label, .checkout label, .admin-card label, .sheet label {
+  font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.form-card input, .checkout input, .admin-card input, .sheet input {
+  border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 10px 0;
+  background: transparent; font-size: 16px; width: 100%; color: var(--ink);
+}
+.form-card input:focus, .sheet input:focus { outline: none; border-bottom-color: var(--accent); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+  border: 0; border-radius: 999px; padding: 14px 18px; font-weight: 700; font-size: 14px;
+  letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+  background: var(--accent); color: var(--accent-ink);
+}
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.btn:not(:disabled):hover { filter: brightness(1.05); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.dark { background: var(--ink); color: var(--bg); }
+.btn.small { width: auto; padding: 8px 12px; font-size: 11px; }
+.ok-box {
+  display: none; background: var(--accent-dim); border: 1px solid var(--accent); color: var(--ink);
+  border-radius: 4px; padding: 14px; margin: 12px 0; line-height: 1.45;
+}
+.ok-box.show { display: block; }
+.plans { display: flex; flex-direction: column; gap: 0; margin-bottom: 8px; }
+.plan { margin: 0; cursor: pointer; text-align: left; width: 100%; padding: 20px 0; position: relative; color: inherit; }
+.plan .price { font-family: var(--display); font-size: 2.6rem; font-weight: 700; letter-spacing: -.05em; line-height: 1; }
+.plan .price span { font-size: .9rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.plan h3 { margin: 0 0 6px; font-size: 1.1rem; letter-spacing: .08em; text-transform: uppercase; }
+.plan p { margin: 0 0 8px; color: var(--muted); font-size: .95rem; line-height: 1.4; }
+.plan .tag {
+  display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent-ink); background: var(--accent); border-radius: 999px; padding: 3px 8px; margin-bottom: 10px;
+}
+.plan.selected { box-shadow: none; }
+.plan.selected h3 { color: var(--accent); }
+.example-note {
+  font-size: 12px; color: var(--accent-ink); background: var(--accent);
+  border-radius: 0; padding: 10px 12px; margin-bottom: 8px; line-height: 1.4; font-weight: 600;
+}
+.pass .qr { display: flex; justify-content: center; background: #fff; padding: 12px; margin: 12px 0 8px; }
+.pass .qr svg { width: 200px; height: 200px; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+.kpis div { background: transparent; border: 1px solid var(--line); border-radius: 0; padding: 12px; text-align: left; }
+.kpis b { display: block; font-size: 2rem; font-family: var(--display); letter-spacing: -.04em; }
+.kpis span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.modal {
+  position: fixed; inset: 0; background: rgba(8,7,6,.72); z-index: 50;
+  display: flex; align-items: flex-end; justify-content: center; padding: 16px 16px calc(16px + var(--safe-b));
+}
+.modal[hidden] { display: none !important; }
+.modal .sheet {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 8px 8px 0 0;
+  padding: 20px 18px; width: 100%; max-width: 440px;
+}
+.stripe-badge {
+  font-size: 12px; color: var(--muted); background: transparent; border: 1px dashed var(--line);
+  border-radius: 0; padding: 10px 0; margin: 8px 0 14px; line-height: 1.4;
+}
+.tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  background: rgba(12, 11, 9, .94);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid var(--line);
+  padding: 4px 6px var(--safe-b);
+}
+.tabbar button {
+  border: 0; background: transparent; color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 4px 6px; font-size: 10px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; cursor: pointer;
+}
+.tabbar button svg { width: 22px; height: 22px; }
+.tabbar button.active { color: var(--accent); }
+.tabbar button.soon { opacity: .5; }
+.tabbar .soon-flag { font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.admin-tabs button {
+  border: 1px solid var(--line); background: transparent; color: var(--ink);
+  border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; cursor: pointer;
+}
+.admin-tabs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.booking-list, .sub-list { list-style: none; margin: 0; padding: 0; }
+.booking-list li, .sub-list li { border-top: 1px solid var(--line); padding: 12px 0; font-size: 14px; line-height: 1.4; }
+.booking-list li:first-child, .sub-list li:first-child { border-top: 0; }
+.booking-list b, .sub-list b { font-family: var(--display); font-size: 1.2rem; }
+.muted { color: var(--muted); }
+.footer-note { text-align: left; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 20px 0 0; }
+.redeem-msg { min-height: 1.4em; font-size: 14px; margin: 8px 0; }
+.redeem-msg.ok { color: var(--accent); }
+.redeem-msg.err { color: var(--busy); }
+#pass, .sel-card, .ok-box { scroll-margin-top: 72px; }
+@media (min-width: 720px) {
+  main { max-width: 640px; padding-top: 28px; }
+  .lead h1 { font-size: 3.2rem; }
+}
+.tbl .lock { opacity: 0; transition: opacity .2s; }
+.tbl.busy .lock { opacity: 1; }
+.tbl.busy .badge { opacity: 0; }
+.tbl.selected .lock { opacity: 0; }
+.filters {
+  /* already set; keep compact single bar */
+}
+
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="index.html" aria-label="Vellia Cafeteria">
+      <img src="icon-192.png" alt="">
+      <span class="brand-name">Vellia Cafeteria<small data-i18n="tagline">Torrevieja</small></span>
+    </a>
+    <span class="admin-chip" id="admin-header" hidden data-i18n="adminMode">Administración</span>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+    </div>
+  </header>
+
+  <div id="admin-tabbar-space" hidden>
+    <div class="admin-tabs" style="padding:12px 16px 0;max-width:560px;margin:0 auto;">
+      <button type="button" data-view="reservas" aria-pressed="true" data-i18n="adminBookings">Reservas</button>
+      <button type="button" data-view="suscriptores" aria-pressed="false" data-i18n="adminSubs">Suscriptores</button>
+      <button type="button" data-view="canjear" aria-pressed="false" data-i18n="adminRedeem">Canjear QR</button>
+      <a class="btn small ghost" href="index.html" style="width:auto;text-decoration:none;" data-i18n="guestView">Vista de invitado</a>
+    </div>
+  </div>
+
+  <main id="view-reservar" class="view">
+    <div class="lead">
+      <h1 data-i18n="reserveTitle">Elige tu mesa</h1>
+      <p data-i18n="reserveLead">Selecciona fecha, hora y número de personas, y toca la mesa en el plano.</p>
+    </div>
+    <div class="filters">
+      <label class="field">
+        <span data-i18n="date">Fecha</span>
+        <input type="date" id="book-date" required>
+      </label>
+      <label class="field guests">
+        <span data-i18n="guests">Comensales</span>
+        <div class="stepper">
+          <button type="button" id="guest-minus" aria-label="-">−</button>
+          <output id="guest-count">2</output>
+          <button type="button" id="guest-plus" aria-label="+">+</button>
+        </div>
+      </label>
+    </div>
+    <div>
+      <label class="field" style="margin-bottom:6px;"><span data-i18n="time">Hora</span></label>
+      <div class="slots" id="slots"></div>
+    </div>
+    <div class="legend">
+      <span class="l-free"><i></i><span data-i18n="legendFree">Libre</span></span>
+      <span class="l-busy"><i></i><span data-i18n="legendBusy">Reservada</span></span>
+      <span class="l-small"><i></i><span data-i18n="legendSmall">Pequeña para el grupo</span></span>
+      <span class="l-sel"><i></i><span data-i18n="legendSel">Seleccionada</span></span>
+    </div>
+    <div class="map-card">
+      <div class="map-caption"><span data-i18n="mapHint">Toca una mesa libre</span><span>Vellia Cafeteria</span></div>
+      <svg id="hall-map" viewBox="0 0 1000 680" role="img" aria-labelledby="mapTitle mapDesc">
+  <title id="mapTitle">Plano de Vellia Cafeteria</title>
+  <desc id="mapDesc">Ventanal superior con tres columnas, mesas V1 y V2 a la izquierda, banqueta M1 a M6, sofá S1, barra vertical decorativa y mesas grandes G1 y G2. Entrada en la pared derecha.</desc>
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="40" y="36" width="920" height="608" fill="#12100e"/>
+  <!-- top window bays -->
+  <g fill="#1c2414" stroke="#3d4a28" stroke-width="0.8">
+    <rect x="56" y="30" width="220" height="12" rx="1"/>
+    <rect x="316" y="30" width="216" height="12" rx="1"/>
+    <rect x="572" y="30" width="188" height="12" rx="1"/>
+    <rect x="800" y="30" width="148" height="12" rx="1"/>
+  </g>
+  <!-- walls: opening on the right for entrada -->
+  <path d="M40 36 H960 V470 M960 560 V644 H40 V36" fill="none" stroke="#cbbca8" stroke-width="1.7"/>
+  <!-- three dark columns dividing window bays -->
+  <g class="cols">
+    <rect x="286" y="36" width="22" height="54" fill="#2a2622" stroke="#6a6358" stroke-width="1"/>
+    <rect x="544" y="36" width="22" height="54" fill="#2a2622" stroke="#6a6358" stroke-width="1"/>
+    <rect x="772" y="36" width="22" height="54" fill="#2a2622" stroke="#6a6358" stroke-width="1"/>
+  </g>
+  <!-- dimension 3730 at first column -->
+  <g fill="#7a756c" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="0.8">
+    <path d="M56 88 H286" stroke="#7a756c" stroke-width="0.6"/>
+    <path d="M56 84 V92 M286 84 V92" stroke="#7a756c" stroke-width="0.6"/>
+    <text x="171" y="85" text-anchor="middle">3730</text>
+  </g>
+  <!-- banquette under M tables only -->
+  <path d="M316 58 H960" fill="none" stroke="#8a8378" stroke-width="6" stroke-linecap="butt"/>
+  <text x="50" y="28" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.4" fill="#7a756c">VENTANAL</text>
+  <g class="tbl" data-id="V1" data-cap="4" tabindex="0" role="button">
+    <g class="armchair" transform="translate(92.0,156.0) rotate(45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(148.0,156.0) rotate(315)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="120" cy="128" r="52"/>
+    <circle class="top" cx="120" cy="128" r="30"/>
+    <circle class="inner" cx="120" cy="128" r="22"/>
+    <text class="lbl" x="120" y="122" font-size="18">V1</text>
+    <text class="badge" x="120" y="136" font-size="11">4</text>
+    <g class="lock" transform="translate(120.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl" data-id="V2" data-cap="4" tabindex="0" role="button">
+    <g class="armchair" transform="translate(194.0,156.0) rotate(45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(250.0,156.0) rotate(315)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="222" cy="128" r="52"/>
+    <circle class="top" cx="222" cy="128" r="30"/>
+    <circle class="inner" cx="222" cy="128" r="22"/>
+    <text class="lbl" x="222" y="122" font-size="18">V2</text>
+    <text class="badge" x="222" y="136" font-size="11">4</text>
+    <g class="lock" transform="translate(222.0,156.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl" data-id="M1" data-cap="2" tabindex="0" role="button">
+    <g class="armchair" transform="translate(390.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="390" cy="128" r="44"/>
+    <circle class="top" cx="390" cy="128" r="22"/>
+    <circle class="inner" cx="390" cy="128" r="14"/>
+    <text class="lbl" x="390" y="123" font-size="15">M1</text>
+    <text class="badge" x="390" y="135" font-size="10">2</text>
+    <g class="lock" transform="translate(390.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl" data-id="M2" data-cap="2" tabindex="0" role="button">
+    <g class="armchair" transform="translate(490.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="490" cy="128" r="44"/>
+    <circle class="top" cx="490" cy="128" r="22"/>
+    <circle class="inner" cx="490" cy="128" r="14"/>
+    <text class="lbl" x="490" y="123" font-size="15">M2</text>
+    <text class="badge" x="490" y="135" font-size="10">2</text>
+    <g class="lock" transform="translate(490.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl" data-id="M3" data-cap="2" tabindex="0" role="button">
+    <g class="armchair" transform="translate(636.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="636" cy="128" r="44"/>
+    <circle class="top" cx="636" cy="128" r="22"/>
+    <circle class="inner" cx="636" cy="128" r="14"/>
+    <text class="lbl" x="636" y="123" font-size="15">M3</text>
+    <text class="badge" x="636" y="135" font-size="10">2</text>
+    <g class="lock" transform="translate(636.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl" data-id="M4" data-cap="2" tabindex="0" role="button">
+    <g class="armchair" transform="translate(726.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="726" cy="128" r="44"/>
+    <circle class="top" cx="726" cy="128" r="22"/>
+    <circle class="inner" cx="726" cy="128" r="14"/>
+    <text class="lbl" x="726" y="123" font-size="15">M4</text>
+    <text class="badge" x="726" y="135" font-size="10">2</text>
+    <g class="lock" transform="translate(726.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl" data-id="M5" data-cap="2" tabindex="0" role="button">
+    <g class="armchair" transform="translate(846.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="846" cy="128" r="44"/>
+    <circle class="top" cx="846" cy="128" r="22"/>
+    <circle class="inner" cx="846" cy="128" r="14"/>
+    <text class="lbl" x="846" y="123" font-size="15">M5</text>
+    <text class="badge" x="846" y="135" font-size="10">2</text>
+    <g class="lock" transform="translate(846.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl" data-id="M6" data-cap="2" tabindex="0" role="button">
+    <g class="armchair" transform="translate(926.0,164.0) rotate(0)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="926" cy="128" r="44"/>
+    <circle class="top" cx="926" cy="128" r="22"/>
+    <circle class="inner" cx="926" cy="128" r="14"/>
+    <text class="lbl" x="926" y="123" font-size="15">M6</text>
+    <text class="badge" x="926" y="135" font-size="10">2</text>
+    <g class="lock" transform="translate(926.0,148.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl zone-s" data-id="S1" data-cap="4" tabindex="0" role="button">
+    <rect class="hit" x="52" y="250" width="230" height="230" rx="2"/>
+    <rect class="sofa-body" x="62" y="268" width="88" height="88" rx="3"/>
+    <rect class="sofa-body" x="158" y="268" width="88" height="88" rx="3"/>
+    <rect class="sofa-body" x="62" y="364" width="88" height="88" rx="3"/>
+    <rect x="168" y="376" width="70" height="52" rx="1" fill="none" stroke="#6a655c" stroke-width="1.1"/>
+    <text class="lbl" x="150" y="348" font-size="20">S1</text>
+    <text class="badge" x="150" y="366" font-size="11">4</text>
+    <g class="lock" transform="translate(150.0,376.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="bar-decor" aria-hidden="true">
+    <rect x="308" y="340" width="72" height="250" rx="3" fill="#1a1612" stroke="#8a8378" stroke-width="1.3"/>
+    <text x="344" y="470" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="11" letter-spacing="2" fill="#8a8378" transform="rotate(-90 344 470)">BARRA</text>
+    <circle class="stool-decor" cx="286" cy="390" r="11"/>
+    <circle class="stool-decor" cx="286" cy="460" r="11"/>
+    <circle class="stool-decor" cx="286" cy="530" r="11"/>
+    <circle class="stool-decor" cx="402" cy="390" r="11"/>
+    <circle class="stool-decor" cx="402" cy="460" r="11"/>
+    <circle class="stool-decor" cx="402" cy="530" r="11"/>
+  </g>
+  <g class="tbl" data-id="G1" data-cap="4" tabindex="0" role="button">
+    <g class="armchair" transform="translate(643.8,473.8) rotate(-45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(556.2,473.8) rotate(45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(556.2,386.2) rotate(135)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(643.8,386.2) rotate(225)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="600" cy="430" r="60"/>
+    <circle class="top" cx="600" cy="430" r="38"/>
+    <circle class="inner" cx="600" cy="430" r="30"/>
+    <text class="lbl" x="600" y="424" font-size="18">G1</text>
+    <text class="badge" x="600" y="438" font-size="11">4</text>
+    <g class="lock" transform="translate(600.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <g class="tbl" data-id="G2" data-cap="4" tabindex="0" role="button">
+    <g class="armchair" transform="translate(863.8,473.8) rotate(-45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(776.2,473.8) rotate(45)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(776.2,386.2) rotate(135)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g><g class="armchair" transform="translate(863.8,386.2) rotate(225)"><rect class="seat" x="-11" y="-9" width="22" height="16" rx="3"/><path class="back" d="M-12 7h24" fill="none"/><rect class="back" x="-12" y="6" width="24" height="7" rx="2"/></g>
+    <circle class="hit" cx="820" cy="430" r="60"/>
+    <circle class="top" cx="820" cy="430" r="38"/>
+    <circle class="inner" cx="820" cy="430" r="30"/>
+    <text class="lbl" x="820" y="424" font-size="18">G2</text>
+    <text class="badge" x="820" y="438" font-size="11">4</text>
+    <g class="lock" transform="translate(820.0,466.0)"><rect x="-5.5" y="-0.5" width="11" height="8" rx="1.4" fill="#ff6b4a" stroke="none"/><path d="M-3.2 -0.5 V-4.2 a3.2 3.2 0 0 1 6.4 0 V-0.5" fill="none" stroke="#ff6b4a" stroke-width="1.5"/></g>
+  </g>
+  <path d="M960 470 V560" stroke="#12100e" stroke-width="3"/>
+  <path d="M960 470 L1000 470 M960 560 L1000 560" stroke="#cbbca8" stroke-width="1.2"/>
+  <text x="908" y="522" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="12" letter-spacing="1.6" fill="#9b9488">ENTRADA</text>
+  <path d="M940 500 H960" stroke="#9b9488" stroke-width="0.8" marker-end=""/>
+  <path d="M930 515 L948 515 L948 528" fill="none" stroke="#9b9488" stroke-width="0.9"/>
+  <!-- second door, service, upper right -->
+  <path d="M960 200 V250" stroke="#12100e" stroke-width="3"/>
+  <text x="918" y="230" text-anchor="middle" font-family="Space Grotesk,system-ui,sans-serif" font-size="9" letter-spacing="1.2" fill="#6a655c">COCINA</text>
+</svg>
+    </div>
+    <div id="book-ok" class="ok-box" role="status"></div>
+    <div id="sel-card" class="sel-card empty"><p data-i18n="pickTable">Toca una mesa libre en el plano.</p></div>
+    <form id="book-form" class="form-card">
+      <h2 data-i18n="yourDetails">Tus datos</h2>
+      <div class="row"><label for="book-name" data-i18n="name">Nombre</label><input id="book-name" name="name" autocomplete="name" required></div>
+      <div class="row"><label for="book-email" data-i18n="email">Correo</label><input id="book-email" name="email" type="email" autocomplete="email" required></div>
+      <div class="row"><label for="book-phone" data-i18n="phone">Teléfono</label><input id="book-phone" name="phone" type="tel" autocomplete="tel" required></div>
+      <p id="book-err" class="redeem-msg err"></p>
+      <button class="btn" type="submit" disabled data-i18n="confirm">Confirmar reserva</button>
+    </form>
+    <p class="footer-note">Vellia Cafeteria · Torrevieja</p>
+  </main>
+
+  <main id="view-suscripcion" class="view" hidden>
+    <div class="lead">
+      <h1 data-i18n="subTitle">Club de café</h1>
+      <p data-i18n="subLead">Un café al día o un bono mensual, con código QR para la barra.</p>
+    </div>
+    <div class="example-note" data-i18n="examplePrices">Precios de ejemplo para este prototipo. Los precios reales se confirmarán antes de cobrar.</div>
+    <div id="pass" class="pass" hidden></div>
+    <div id="plans" class="plans"></div>
+  </main>
+
+  <main id="view-pedir" class="view" hidden>
+    <div class="lead">
+      <h1 data-i18n="orderTitle">Pedir para recoger</h1>
+      <p data-i18n="orderLead">Pronto podrás pedir desayuno o café por adelantado y recogerlo sin cola. Esta sección se añadirá más adelante.</p>
+    </div>
+    <div class="soon-card">
+      <p class="muted" style="text-align:center;margin:8px 0 0;">
+        <span class="soon-flag" data-i18n="soon">Pronto</span><br><strong>Vellia Cafeteria</strong>
+      </p>
+    </div>
+  </main>
+
+  <main id="view-reservas" class="view" hidden>
+    <div class="lead"><h1 data-i18n="adminBookings">Reservas</h1></div>
+    <div class="map-card" id="admin-map-card">
+      <div class="map-caption"><span data-i18n="legendBusy">Reservada</span><span>Vellia Cafeteria</span></div>
+      <div id="admin-map-slot"></div>
+    </div>
+    <div class="admin-card">
+      <label class="field"><span data-i18n="date">Fecha</span><input type="date" id="admin-date"></label>
+      <ul id="admin-bookings" class="booking-list"></ul>
+    </div>
+  </main>
+
+  <main id="view-suscriptores" class="view" hidden>
+    <div class="lead"><h1 data-i18n="adminSubs">Suscriptores</h1></div>
+    <div class="admin-card">
+      <ul id="admin-subs" class="sub-list"></ul>
+    </div>
+  </main>
+
+  <main id="view-canjear" class="view" hidden>
+    <div class="lead"><h1 data-i18n="adminRedeem">Canjear QR</h1></div>
+    <div class="admin-card">
+      <form id="redeem-form">
+        <div class="row">
+          <label for="redeem-code" data-i18n="redeemLabel">Código QR</label>
+          <input id="redeem-code" autocomplete="off" placeholder="VELLIA-CAFE:…">
+        </div>
+        <p id="redeem-msg" class="redeem-msg"></p>
+        <button class="btn" type="submit" data-i18n="redeemBtn">Canjear bebida</button>
+        <button class="btn ghost" type="button" id="simulate-scan" style="margin-top:8px;" data-i18n="simulateScan">Simular escaneo</button>
+      </form>
+    </div>
+    <div class="admin-card">
+      <h2 data-i18n="usedToday">Usadas hoy</h2>
+      <ul id="admin-redeems" class="sub-list"></ul>
+    </div>
+  </main>
+
+  <div id="checkout-modal" class="modal" hidden>
+    <div class="sheet" role="dialog" aria-labelledby="checkout-title">
+      <h2 id="checkout-title" class="serif" data-i18n="checkoutTitle" style="margin:0 0 8px;font-size:1.4rem;">Suscribirse</h2>
+      <div class="stripe-badge" data-i18n="stripeNote">Simulación de pago. En la versión final este paso se hará con Stripe. No se realizará ningún cargo ahora.</div>
+      <form id="sub-form">
+        <div class="row" style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
+          <label for="sub-name" data-i18n="name">Nombre</label>
+          <input id="sub-name" autocomplete="name" required style="border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--paper);">
+        </div>
+        <div class="row" style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
+          <label for="sub-email" data-i18n="email">Correo</label>
+          <input id="sub-email" type="email" autocomplete="email" required style="border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--paper);">
+        </div>
+        <div class="row" style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px;">
+          <label for="sub-phone" data-i18n="phone">Teléfono</label>
+          <input id="sub-phone" type="tel" autocomplete="tel" required style="border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--paper);">
+        </div>
+        <p id="sub-err" class="redeem-msg err"></p>
+        <button class="btn" type="submit" data-i18n="payMock">Confirmar suscripción</button>
+        <button class="btn ghost" type="button" id="checkout-cancel" style="margin-top:8px;" data-i18n="cancel">Cancelar</button>
+      </form>
+    </div>
+  </div>
+
+  <nav class="tabbar" id="guest-tabbar" aria-label="Vellia Cafeteria">
+    <button type="button" data-view="reservar" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8" cy="12" r="1.4"/><circle cx="12" cy="9.5" r="1.4"/><circle cx="16" cy="12" r="1.4"/><path d="M7 17h10"/></svg>
+      <span data-i18n="tabReserve">Reservar mesa</span>
+    </button>
+    <button type="button" data-view="suscripcion">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9h11a4 4 0 0 1 0 8H8a3 3 0 0 1-3-3V9z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 4c.5 1 1 2 0 3M12 4c.5 1 1 2 0 3"/></svg>
+      <span data-i18n="tabSub">Suscripción café</span>
+    </button>
+    <button type="button" data-view="pedir" class="soon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16l-1.2 11.2A2 2 0 0 1 16.8 20H7.2a2 2 0 0 1-2-1.8L4 7z"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>
+      <span data-i18n="tabOrder">Pedir</span>
+      <span class="soon-flag" data-i18n="soon">Pronto</span>
+    </button>
+  </nav>
+
+  <script>
+/**
+ * Minified by jsDelivr using Terser v5.37.0.
+ * Original file: /npm/qrcode-generator@1.4.4/qrcode.js
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
+
+  </script>
+  <script>
+(function () {
+  'use strict';
+
+  var BOOK_KEY = 'vellia-cafeteria-bookings-v2';
+  var SUB_KEY = 'vellia-cafeteria-subs-v2';
+  var REDEEM_KEY = 'vellia-cafeteria-redeems-v2';
+  var LANG_KEY = 'vellia-cafeteria-lang';
+
+  var TABLES = [
+    { id: 'V1', zone: 'window', cap: 4 },
+    { id: 'V2', zone: 'window', cap: 4 },
+    { id: 'M1', zone: 'banquette', cap: 2 },
+    { id: 'M2', zone: 'banquette', cap: 2 },
+    { id: 'M3', zone: 'banquette', cap: 2 },
+    { id: 'M4', zone: 'banquette', cap: 2 },
+    { id: 'M5', zone: 'banquette', cap: 2 },
+    { id: 'M6', zone: 'banquette', cap: 2 },
+    { id: 'S1', zone: 'sofa', cap: 4 },
+    { id: 'G1', zone: 'grandes', cap: 4 },
+    { id: 'G2', zone: 'grandes', cap: 4 }
+  ];
+  var TABLE_BY_ID = {};
+  TABLES.forEach(function (t) { TABLE_BY_ID[t.id] = t; });
+
+  var SLOTS = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+
+  var PLANS = [
+    { id: 'diario', price: 39, cups: 30, dailyLimit: 1 },
+    { id: 'bono20', price: 32, cups: 20, dailyLimit: 2 },
+    { id: 'premium', price: 59, cups: 30, dailyLimit: 1 }
+  ];
+  var PLAN_BY_ID = {};
+  PLANS.forEach(function (p) { PLAN_BY_ID[p.id] = p; });
+
+  var I18N = {
+    es: {
+      tagline: 'Torrevieja',
+      reserveTitle: 'Elige tu mesa',
+      reserveLead: 'Selecciona fecha, hora y número de personas, y toca la mesa en el plano.',
+      date: 'Fecha',
+      time: 'Hora',
+      guests: 'Comensales',
+      guestsN: '{n} personas',
+      guests1: '1 persona',
+      legendFree: 'Libre',
+      legendBusy: 'Reservada',
+      legendSmall: 'Pequeña para el grupo',
+      legendSel: 'Seleccionada',
+      mapHint: '11 mesas · toca para elegir',
+      pickTable: 'Toca una mesa libre en el plano.',
+      selected: 'Mesa {id}',
+      capacity: 'Hasta {n} personas',
+      capacity1: '1 persona',
+      exampleTag: 'Precio de ejemplo',
+      zoneWindow: 'Mesa junto al ventanal',
+      zoneBanquette: 'Banqueta',
+      zoneSofa: 'Zona de sofá',
+      zoneGrandes: 'Mesa grande',
+      yourDetails: 'Tus datos',
+      name: 'Nombre',
+      email: 'Correo',
+      phone: 'Teléfono',
+      confirm: 'Confirmar reserva',
+      booked: 'Reserva confirmada',
+      bookedBody: 'Mesa {id}, {date} a las {slot}, {guests}. En la versión final recibirá un correo con Apple Wallet y Google Wallet.',
+      tabReserve: 'Reservar mesa',
+      tabSub: 'Suscripción café',
+      tabOrder: 'Pedir',
+      soon: 'Pronto',
+      subTitle: 'Club de café',
+      subLead: 'Un café al día o un bono mensual, con código QR para la barra.',
+      examplePrices: 'Precios de ejemplo para este prototipo. Los precios reales se confirmarán antes de cobrar.',
+      planDiario: 'Diario',
+      planDiarioDesc: '1 café al día (espresso o café con leche). Ideal si vienes cada mañana.',
+      planBono: 'Bono 20',
+      planBonoDesc: '20 cafés al mes, con un máximo de 2 al día.',
+      planPremium: 'Premium',
+      planPremiumDesc: '1 bebida especial al día: latte, cappuccino, filtro o matcha.',
+      perMonth: '/ mes',
+      dailyLimit: 'Límite diario: {n}',
+      cupsMonth: '{n} bebidas / mes',
+      choosePlan: 'Elegir este plan',
+      checkoutTitle: 'Suscribirse',
+      stripeNote: 'Simulación de pago. En la versión final este paso se hará con Stripe. No se realizará ningún cargo ahora.',
+      payMock: 'Confirmar suscripción',
+      cancel: 'Cancelar',
+      passTitle: 'Tu pase de café',
+      remaining: 'Bebidas restantes',
+      todayLimit: 'Límite de hoy',
+      usedToday: 'Usadas hoy',
+      qrHint: 'Muestra este código en la barra. Es personal y se renueva cada día.',
+      limitReached: 'Has alcanzado el límite de hoy. Vuelve mañana.',
+      noCups: 'No quedan bebidas en este plan.',
+      orderTitle: 'Pedir para recoger',
+      orderLead: 'Pronto podrás pedir desayuno o café por adelantado y recogerlo sin cola. Esta sección se añadirá más adelante.',
+      adminMode: 'Administración',
+      adminBookings: 'Reservas',
+      adminSubs: 'Suscriptores',
+      adminRedeem: 'Canjear QR',
+      guestView: 'Vista de invitado',
+      noBookings: 'No hay reservas para esta fecha.',
+      redeemLabel: 'Código QR',
+      redeemBtn: 'Canjear bebida',
+      simulateScan: 'Simular escaneo',
+      redeemOk: 'Bebida canjeada para {name}. Restan {n}.',
+      redeemBad: 'Código no válido.',
+      redeemUsed: 'Este código ya se ha usado o se alcanzó el límite diario.',
+      redeemEmpty: 'No quedan bebidas.',
+      needFields: 'Completa nombre, correo y teléfono.',
+      needTable: 'Elige una mesa libre.',
+      needPlan: 'Elige un plan.',
+      people: 'pers.',
+      install: 'Instalar app'
+    },
+    en: {
+      tagline: 'Torrevieja',
+      reserveTitle: 'Choose your table',
+      reserveLead: 'Pick a date, time and party size, then tap a table on the floor plan.',
+      date: 'Date',
+      time: 'Time',
+      guests: 'Guests',
+      guestsN: '{n} guests',
+      guests1: '1 guest',
+      legendFree: 'Free',
+      legendBusy: 'Booked',
+      legendSmall: 'Too small for the party',
+      legendSel: 'Selected',
+      mapHint: '11 tables · tap to choose',
+      pickTable: 'Tap a free table on the plan.',
+      selected: 'Table {id}',
+      capacity: 'Up to {n} guests',
+      capacity1: '1 guest',
+      exampleTag: 'Sample price',
+      zoneWindow: 'Window table',
+      zoneBanquette: 'Banquette',
+      zoneSofa: 'Sofa area',
+      zoneGrandes: 'Large table',
+      yourDetails: 'Your details',
+      name: 'Name',
+      email: 'Email',
+      phone: 'Phone',
+      confirm: 'Confirm booking',
+      booked: 'Booking confirmed',
+      bookedBody: 'Table {id}, {date} at {slot}, {guests}. In the final version you will get an email with Apple Wallet and Google Wallet.',
+      tabReserve: 'Book a table',
+      tabSub: 'Coffee club',
+      tabOrder: 'Order',
+      soon: 'Soon',
+      subTitle: 'Coffee club',
+      subLead: 'A daily coffee or a monthly pass, with a QR code for the bar.',
+      examplePrices: 'Sample prices for this prototype. Real prices will be confirmed before any charge.',
+      planDiario: 'Daily',
+      planDiarioDesc: '1 coffee a day (espresso or café con leche). Best if you come every morning.',
+      planBono: '20-cup pass',
+      planBonoDesc: '20 coffees a month, up to 2 per day.',
+      planPremium: 'Premium',
+      planPremiumDesc: '1 speciality drink a day: latte, cappuccino, filter coffee or matcha.',
+      perMonth: '/ month',
+      dailyLimit: 'Daily limit: {n}',
+      cupsMonth: '{n} drinks / month',
+      choosePlan: 'Choose this plan',
+      checkoutTitle: 'Subscribe',
+      stripeNote: 'Payment simulation. In the final version this step will use Stripe. No charge will be made now.',
+      payMock: 'Confirm subscription',
+      cancel: 'Cancel',
+      passTitle: 'Your coffee pass',
+      remaining: 'Drinks left',
+      todayLimit: 'Today’s limit',
+      usedToday: 'Used today',
+      qrHint: 'Show this code at the bar. It is personal and renews each day.',
+      limitReached: 'You have reached today’s limit. Come back tomorrow.',
+      noCups: 'No drinks left on this plan.',
+      orderTitle: 'Order for pickup',
+      orderLead: 'Soon you will be able to pre-order breakfast or coffee and pick it up without queuing. This section will be added later.',
+      adminMode: 'Admin',
+      adminBookings: 'Bookings',
+      adminSubs: 'Subscribers',
+      adminRedeem: 'Redeem QR',
+      guestView: 'Guest view',
+      noBookings: 'No bookings on this date.',
+      redeemLabel: 'QR code',
+      redeemBtn: 'Redeem drink',
+      simulateScan: 'Simulate scan',
+      redeemOk: 'Drink redeemed for {name}. {n} left.',
+      redeemBad: 'Invalid code.',
+      redeemUsed: 'This code has already been used or the daily limit was reached.',
+      redeemEmpty: 'No drinks left.',
+      needFields: 'Please fill in name, email and phone.',
+      needTable: 'Please choose a free table.',
+      needPlan: 'Please choose a plan.',
+      people: 'ppl.',
+      install: 'Install app'
+    },
+    ru: {
+      tagline: 'Торревьеха',
+      reserveTitle: 'Выберите стол',
+      reserveLead: 'Укажите дату, время и число гостей, затем нажмите стол на плане зала.',
+      date: 'Дата',
+      time: 'Время',
+      guests: 'Гости',
+      guestsN: '{n} гостей',
+      guests1: '1 гость',
+      legendFree: 'Свободен',
+      legendBusy: 'Забронирован',
+      legendSmall: 'Мало мест',
+      legendSel: 'Выбран',
+      mapHint: '11 столов · нажмите, чтобы выбрать',
+      pickTable: 'Нажмите свободный стол на плане.',
+      selected: 'Стол {id}',
+      capacity: 'До {n} гостей',
+      capacity1: '1 гость',
+      exampleTag: 'Примерная цена',
+      zoneWindow: 'Стол у окна',
+      zoneBanquette: 'Банкетка',
+      zoneSofa: 'Зона с диваном',
+      zoneGrandes: 'Большой стол',
+      yourDetails: 'Ваши данные',
+      name: 'Имя',
+      email: 'Эл. почта',
+      phone: 'Телефон',
+      confirm: 'Подтвердить бронь',
+      booked: 'Бронь подтверждена',
+      bookedBody: 'Стол {id}, {date} в {slot}, {guests}. В финальной версии вы получите письмо с Apple Wallet и Google Wallet.',
+      tabReserve: 'Бронь стола',
+      tabSub: 'Подписка на кофе',
+      tabOrder: 'Заказ',
+      soon: 'Скоро',
+      subTitle: 'Клуб кофе',
+      subLead: 'Кофе каждый день или месячный абонемент, с QR-кодом для барной стойки.',
+      examplePrices: 'Примерные цены для прототипа. Реальные цены подтвердим до оплаты.',
+      planDiario: 'Ежедневный',
+      planDiarioDesc: '1 кофе в день (эспрессо или café con leche). Если вы заходите каждое утро.',
+      planBono: 'Абонемент 20',
+      planBonoDesc: '20 чашек в месяц, не больше 2 в день.',
+      planPremium: 'Premium',
+      planPremiumDesc: '1 напиток дня: латте, капучино, фильтр или матча.',
+      perMonth: '/ мес.',
+      dailyLimit: 'Лимит в день: {n}',
+      cupsMonth: '{n} напитков / мес.',
+      choosePlan: 'Выбрать план',
+      checkoutTitle: 'Оформить подписку',
+      stripeNote: 'Это имитация оплаты. В финальной версии шаг пройдёт через Stripe. Сейчас списание не выполняется.',
+      payMock: 'Подтвердить подписку',
+      cancel: 'Отмена',
+      passTitle: 'Ваш кофе-пасс',
+      remaining: 'Осталось напитков',
+      todayLimit: 'Лимит на сегодня',
+      usedToday: 'Использовано сегодня',
+      qrHint: 'Покажите этот код на барной стойке. Он личный и обновляется каждый день.',
+      limitReached: 'На сегодня лимит исчерпан. Приходите завтра.',
+      noCups: 'По этому плану напитков не осталось.',
+      orderTitle: 'Заказ навынос',
+      orderLead: 'Скоро можно будет заказать завтрак или кофе заранее и забрать без очереди. Этот раздел появится позже.',
+      adminMode: 'Админка',
+      adminBookings: 'Брони',
+      adminSubs: 'Подписчики',
+      adminRedeem: 'Списать QR',
+      guestView: 'Вид для гостя',
+      noBookings: 'На эту дату броней нет.',
+      redeemLabel: 'Код QR',
+      redeemBtn: 'Списать напиток',
+      simulateScan: 'Имитация сканера',
+      redeemOk: 'Напиток списан для {name}. Осталось {n}.',
+      redeemBad: 'Неверный код.',
+      redeemUsed: 'Этот код уже использован или исчерпан дневной лимит.',
+      redeemEmpty: 'Напитков не осталось.',
+      needFields: 'Заполните имя, почту и телефон.',
+      needTable: 'Выберите свободный стол.',
+      needPlan: 'Выберите план.',
+      people: 'чел.',
+      install: 'Установить'
+    }
+  };
+
+  var lang = 'es';
+  var isAdmin = /(?:^\?|&)admin=1(?:&|$)/.test(location.search);
+  var state = {
+    date: '',
+    slot: '10:00',
+    guests: 2,
+    table: null,
+    plan: null,
+    view: 'reservar'
+  };
+
+  function t(key, vars) {
+    var dict = I18N[lang] || I18N.es;
+    var s = dict[key] || I18N.es[key] || key;
+    if (vars) {
+      Object.keys(vars).forEach(function (k) {
+        s = s.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]);
+      });
+    }
+    return s;
+  }
+
+  function madridISODate(d) {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(d || new Date());
+  }
+  function madridHM() {
+    var parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hour12: false
+    }).formatToParts(new Date());
+    var map = {};
+    parts.forEach(function (p) { map[p.type] = p.value; });
+    return (map.hour || '00') + ':' + (map.minute || '00');
+  }
+  function addDaysISO(iso, n) {
+    var p = iso.split('-').map(Number);
+    var d = new Date(Date.UTC(p[0], p[1] - 1, p[2] + n));
+    var y = d.getUTCFullYear();
+    var m = String(d.getUTCMonth() + 1).padStart(2, '0');
+    var day = String(d.getUTCDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+  function fmtDate(iso) {
+    if (!iso) return '';
+    var p = iso.split('-');
+    if (lang === 'en') {
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return Number(p[2]) + ' ' + months[Number(p[1]) - 1] + ' ' + p[0];
+    }
+    return p[2] + '.' + p[1] + '.' + p[0];
+  }
+  function guestsLabel(n) {
+    return n === 1 ? t('guests1') : t('guestsN', { n: n });
+  }
+  function capLabel(n) {
+    return n === 1 ? t('capacity1') : t('capacity', { n: n });
+  }
+  function load(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) { return fallback; }
+  }
+  function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+  function uid(prefix) { return prefix + '-' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4); }
+
+  function seed() {
+    if (!localStorage.getItem(BOOK_KEY)) {
+      var today = madridISODate();
+      var tomorrow = addDaysISO(today, 1);
+      save(BOOK_KEY, [
+        { id: 'demo-1', table: 'M3', date: tomorrow, slot: '10:00', guests: 2, name: 'Ana López', email: 'ana@example.com', phone: '+34 600 111 222', created: today },
+        { id: 'demo-2', table: 'G1', date: tomorrow, slot: '10:00', guests: 4, name: 'Mark Evans', email: 'mark@example.com', phone: '+34 600 222 333', created: today },
+        { id: 'demo-3', table: 'V1', date: tomorrow, slot: '10:00', guests: 4, name: 'Piotr Nowak', email: 'piotr@example.com', phone: '+34 600 333 444', created: today },
+        { id: 'demo-4', table: 'V2', date: tomorrow, slot: '13:00', guests: 3, name: 'Lucía Martín', email: 'lucia@example.com', phone: '+34 600 444 555', created: today },
+        { id: 'demo-5', table: 'S1', date: tomorrow, slot: '13:00', guests: 4, name: 'Elena Ruiz', email: 'elena@example.com', phone: '+34 600 555 666', created: today },
+        { id: 'demo-6', table: 'M5', date: today, slot: '16:00', guests: 2, name: 'Carlos Vidal', email: 'carlos@example.com', phone: '+34 600 666 777', created: today }
+      ]);
+    }
+    if (!localStorage.getItem(SUB_KEY)) {
+      save(SUB_KEY, [{
+        id: 'sub-demo-1',
+        plan: 'diario',
+        name: 'María Gómez',
+        email: 'maria@example.com',
+        phone: '+34 600 777 888',
+        remaining: 22,
+        dailyLimit: 1,
+        cupsTotal: 30,
+        started: '2026-11-01',
+        lastRedeem: '2026-11-09'
+      }]);
+    }
+    if (!localStorage.getItem(REDEEM_KEY)) save(REDEEM_KEY, []);
+  }
+
+  function bookings() { return load(BOOK_KEY, []); }
+  function subs() { return load(SUB_KEY, []); }
+  function redeems() { return load(REDEEM_KEY, []); }
+
+  function isOccupied(tableId, date, slot) {
+    return bookings().some(function (b) { return b.table === tableId && b.date === date && b.slot === slot; });
+  }
+  function slotPast(date, slot) {
+    var today = madridISODate();
+    if (date < today) return true;
+    if (date > today) return false;
+    return slot <= madridHM();
+  }
+
+  function applyI18n() {
+    document.documentElement.lang = lang === 'ru' ? 'ru' : lang;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      el.innerHTML = t(el.getAttribute('data-i18n-html'));
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+    document.querySelectorAll('.lang button').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+    });
+    var titleMap = { reservar: 'Reservar mesa', suscripcion: 'Suscripción café', pedir: 'Pedir' };
+    var page = isAdmin ? 'Administración' : (titleMap[state.view] || 'Vellia Cafeteria');
+    document.title = 'Vellia Cafeteria — ' + page;
+    renderAll();
+  }
+
+  function setLang(next) {
+    lang = I18N[next] ? next : 'es';
+    localStorage.setItem(LANG_KEY, lang);
+    applyI18n();
+  }
+
+  function renderSlots() {
+    var box = document.getElementById('slots');
+    if (!box) return;
+    box.innerHTML = '';
+    SLOTS.forEach(function (slot) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = slot;
+      b.disabled = !state.date || slotPast(state.date, slot);
+      b.setAttribute('aria-pressed', slot === state.slot ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        if (b.disabled) return;
+        state.slot = slot;
+        state.table = null;
+        renderSlots();
+        renderMap();
+        renderSelection();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function renderMap() {
+    var nodes = document.querySelectorAll('#hall-map .tbl, #hall-map-admin .tbl');
+    if (!nodes.length) return;
+    nodes.forEach(function (g) {
+      var id = g.getAttribute('data-id');
+      var meta = TABLE_BY_ID[id];
+      g.classList.remove('busy', 'small', 'selected');
+      var status = 'free';
+      if (!state.date || !state.slot) status = 'free';
+      else if (isOccupied(id, state.date, state.slot)) status = 'busy';
+      else if (meta && state.guests > meta.cap) status = 'small';
+      if (state.table === id && status === 'free') status = 'selected';
+      if (status !== 'free') g.classList.add(status);
+      var label = id + ', ' + (meta ? meta.cap : '') + ' — ' + t(status === 'busy' ? 'legendBusy' : status === 'small' ? 'legendSmall' : status === 'selected' ? 'legendSel' : 'legendFree');
+      g.setAttribute('aria-label', label);
+    });
+  }
+
+  function zoneKey(z) {
+    if (z === 'window') return 'zoneWindow';
+    if (z === 'banquette') return 'zoneBanquette';
+    if (z === 'sofa') return 'zoneSofa';
+    return 'zoneGrandes';
+  }
+
+  function renderSelection() {
+    var card = document.getElementById('sel-card');
+    var form = document.getElementById('book-form');
+    if (!card) return;
+    if (!state.table) {
+      card.classList.add('empty');
+      card.innerHTML = '<p>' + t('pickTable') + '</p>';
+      if (form) form.querySelector('.btn').disabled = true;
+      return;
+    }
+    var meta = TABLE_BY_ID[state.table];
+    card.classList.remove('empty');
+    card.innerHTML = '<h2>' + t('selected', { id: state.table }) + '</h2>' +
+      '<p>' + t(zoneKey(meta.zone)) + ' · ' + capLabel(meta.cap) + '</p>' +
+      '<p class="muted">' + fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests) + '</p>';
+    if (form) form.querySelector('.btn').disabled = false;
+  }
+
+  function confirmBooking(ev) {
+    ev.preventDefault();
+    var name = document.getElementById('book-name').value.trim();
+    var email = document.getElementById('book-email').value.trim();
+    var phone = document.getElementById('book-phone').value.trim();
+    var err = document.getElementById('book-err');
+    err.textContent = '';
+    if (!state.table || !state.date || !state.slot) { err.textContent = t('needTable'); return; }
+    if (isOccupied(state.table, state.date, state.slot) || state.guests > TABLE_BY_ID[state.table].cap) {
+      err.textContent = t('needTable'); return;
+    }
+    if (!name || !email || !phone) { err.textContent = t('needFields'); return; }
+    var list = bookings();
+    list.push({
+      id: uid('bk'), table: state.table, date: state.date, slot: state.slot,
+      guests: state.guests, name: name, email: email, phone: phone, created: madridISODate() + ' ' + madridHM()
+    });
+    save(BOOK_KEY, list);
+    var ok = document.getElementById('book-ok');
+    ok.classList.add('show');
+    ok.innerHTML = '<strong>' + t('booked') + '</strong><br>' + t('bookedBody', {
+      id: state.table, date: fmtDate(state.date), slot: state.slot, guests: guestsLabel(state.guests)
+    });
+    state.table = null;
+    renderMap();
+    renderSelection();
+    ev.target.reset();
+    ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function currentGuestSub() {
+    var email = (localStorage.getItem('vellia-cafeteria-sub-email') || '').toLowerCase();
+    if (!email) return null;
+    return subs().filter(function (s) { return (s.email || '').toLowerCase() === email; }).pop() || null;
+  }
+
+  function usedToday(subId, date) {
+    return redeems().filter(function (r) { return r.subId === subId && r.date === date; }).length;
+  }
+
+  function nextQrPayload(sub) {
+    var date = madridISODate();
+    var n = usedToday(sub.id, date) + 1;
+    return 'VELLIA-CAFE:' + sub.id + ':' + date + ':' + n;
+  }
+
+  function renderPlans() {
+    var box = document.getElementById('plans');
+    if (!box) return;
+    box.innerHTML = '';
+    var names = { diario: 'planDiario', bono20: 'planBono', premium: 'planPremium' };
+    var descs = { diario: 'planDiarioDesc', bono20: 'planBonoDesc', premium: 'planPremiumDesc' };
+    PLANS.forEach(function (p) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'plan' + (state.plan === p.id ? ' selected' : '');
+      b.innerHTML = '<div class="tag">' + t('exampleTag') + '</div>' +
+        '<h3>' + t(names[p.id]) + '</h3>' +
+        '<div class="price">' + p.price + ' €<span>' + t('perMonth') + '</span></div>' +
+        '<p>' + t(descs[p.id]) + '</p>' +
+        '<p class="muted">' + t('cupsMonth', { n: p.cups }) + ' · ' + t('dailyLimit', { n: p.dailyLimit }) + '</p>';
+      b.addEventListener('click', function () {
+        state.plan = p.id;
+        renderPlans();
+        openCheckout();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function renderPass() {
+    var wrap = document.getElementById('pass');
+    if (!wrap) return;
+    var sub = currentGuestSub();
+    if (!sub) { wrap.hidden = true; wrap.innerHTML = ''; return; }
+    wrap.hidden = false;
+    var date = madridISODate();
+    var used = usedToday(sub.id, date);
+    var can = sub.remaining > 0 && used < sub.dailyLimit;
+    var payload = can ? nextQrPayload(sub) : '';
+    var qrHtml = '';
+    if (can && typeof qrcode === 'function') {
+      try {
+        var qr = qrcode(0, 'M');
+        qr.addData(payload);
+        qr.make();
+        qrHtml = '<div class="qr">' + qr.createSvgTag(4, 2) + '</div><p class="muted" style="text-align:center;font-size:11px;word-break:break-all">' + payload + '</p>';
+      } catch (e) {
+        qrHtml = '<p class="muted">' + payload + '</p>';
+      }
+    } else if (!can) {
+      qrHtml = '<p>' + (sub.remaining <= 0 ? t('noCups') : t('limitReached')) + '</p>';
+    }
+    var plan = PLAN_BY_ID[sub.plan];
+    wrap.innerHTML = '<h2>' + t('passTitle') + '</h2>' +
+      '<p class="muted">' + sub.name + ' · ' + (plan ? t({ diario: 'planDiario', bono20: 'planBono', premium: 'planPremium' }[sub.plan]) : sub.plan) + '</p>' +
+      '<div class="kpis"><div><b>' + sub.remaining + '</b><span>' + t('remaining') + '</span></div>' +
+      '<div><b>' + used + ' / ' + sub.dailyLimit + '</b><span>' + t('usedToday') + '</span></div></div>' +
+      qrHtml + '<p class="note">' + t('qrHint') + '</p>';
+  }
+
+  function openCheckout() { document.getElementById('checkout-modal').hidden = false; }
+  function closeCheckout() { document.getElementById('checkout-modal').hidden = true; }
+
+  function confirmSub(ev) {
+    ev.preventDefault();
+    var name = document.getElementById('sub-name').value.trim();
+    var email = document.getElementById('sub-email').value.trim();
+    var phone = document.getElementById('sub-phone').value.trim();
+    var err = document.getElementById('sub-err');
+    err.textContent = '';
+    if (!state.plan) { err.textContent = t('needPlan'); return; }
+    if (!name || !email || !phone) { err.textContent = t('needFields'); return; }
+    var plan = PLAN_BY_ID[state.plan];
+    var list = subs();
+    var rec = {
+      id: uid('sub'), plan: plan.id, name: name, email: email, phone: phone,
+      remaining: plan.cups, dailyLimit: plan.dailyLimit, cupsTotal: plan.cups,
+      started: madridISODate(), lastRedeem: null
+    };
+    list.push(rec);
+    save(SUB_KEY, list);
+    localStorage.setItem('vellia-cafeteria-sub-email', email);
+    closeCheckout();
+    renderPass();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function parsePayload(code) {
+    var m = String(code || '').trim().match(/^VELLIA-CAFE:([^:]+):(\d{4}-\d{2}-\d{2}):(\d+)$/);
+    if (!m) return null;
+    return { subId: m[1], date: m[2], n: Number(m[3]) };
+  }
+
+  function redeemCode(code) {
+    var parsed = parsePayload(code);
+    var msg = document.getElementById('redeem-msg');
+    if (!parsed) { msg.className = 'redeem-msg err'; msg.textContent = t('redeemBad'); return; }
+    var today = madridISODate();
+    if (parsed.date !== today) { msg.className = 'redeem-msg err'; msg.textContent = t('redeemUsed'); return; }
+    var list = subs();
+    var sub = list.filter(function (s) { return s.id === parsed.subId; })[0];
+    if (!sub) { msg.className = 'redeem-msg err'; msg.textContent = t('redeemBad'); return; }
+    if (sub.remaining <= 0) { msg.className = 'redeem-msg err'; msg.textContent = t('redeemEmpty'); return; }
+    var used = usedToday(sub.id, today);
+    if (used >= sub.dailyLimit) { msg.className = 'redeem-msg err'; msg.textContent = t('redeemUsed'); return; }
+    if (parsed.n !== used + 1) { msg.className = 'redeem-msg err'; msg.textContent = t('redeemUsed'); return; }
+    var already = redeems().some(function (r) { return r.code === code; });
+    if (already) { msg.className = 'redeem-msg err'; msg.textContent = t('redeemUsed'); return; }
+    sub.remaining -= 1;
+    sub.lastRedeem = today;
+    save(SUB_KEY, list);
+    var hist = redeems();
+    hist.push({ code: code, subId: sub.id, date: today, time: madridHM(), name: sub.name });
+    save(REDEEM_KEY, hist);
+    msg.className = 'redeem-msg ok';
+    msg.textContent = t('redeemOk', { name: sub.name, n: sub.remaining });
+    renderAdmin();
+    renderPass();
+  }
+
+  function ensureAdminMap() {
+    var slot = document.getElementById('admin-map-slot');
+    var src = document.getElementById('hall-map');
+    if (!slot || !src) return;
+    if (!document.getElementById('hall-map-admin')) {
+      var clone = src.cloneNode(true);
+      clone.id = 'hall-map-admin';
+      slot.innerHTML = '';
+      slot.appendChild(clone);
+    }
+    renderMap();
+  }
+  function renderAdmin() {
+    if (!isAdmin) return;
+    ensureAdminMap();
+    var date = document.getElementById('admin-date').value || state.date;
+    var listEl = document.getElementById('admin-bookings');
+    var items = bookings().filter(function (b) { return b.date === date; })
+      .sort(function (a, b) { return a.slot.localeCompare(b.slot) || a.table.localeCompare(b.table); });
+    if (!items.length) listEl.innerHTML = '<li class="muted">' + t('noBookings') + '</li>';
+    else {
+      var byTable = {};
+      items.forEach(function (b) { (byTable[b.table] = byTable[b.table] || []).push(b); });
+      listEl.innerHTML = Object.keys(byTable).sort().map(function (id) {
+        var rows = byTable[id].map(function (b) {
+          return '<div class="muted">' + b.slot + ' · ' + b.name + ' · ' + b.guests + ' ' + t('people') + ' · ' + b.phone + '</div>';
+        }).join('');
+        return '<li><b>' + id + '</b> · ' + (TABLE_BY_ID[id] ? capLabel(TABLE_BY_ID[id].cap) : '') + rows + '</li>';
+      }).join('');
+    }
+    var subEl = document.getElementById('admin-subs');
+    subEl.innerHTML = subs().map(function (s) {
+      var used = usedToday(s.id, madridISODate());
+      return '<li><b>' + s.name + '</b><div class="muted">' + s.email + ' · ' + s.plan + ' · ' + t('remaining') + ': ' + s.remaining +
+        ' · ' + t('usedToday') + ': ' + used + '/' + s.dailyLimit + (s.lastRedeem ? ' · ' + fmtDate(s.lastRedeem) : '') + '</div></li>';
+    }).join('') || '<li class="muted">—</li>';
+    var histEl = document.getElementById('admin-redeems');
+    var todayR = redeems().filter(function (r) { return r.date === madridISODate(); }).reverse();
+    histEl.innerHTML = todayR.map(function (r) {
+      return '<li>' + r.time + ' · ' + r.name + ' · <span class="muted">' + r.code + '</span></li>';
+    }).join('') || '<li class="muted">—</li>';
+  }
+
+  function setView(name, push) {
+    var guestViews = { reservar: 1, suscripcion: 1, pedir: 1 };
+    var adminViews = { reservas: 1, suscriptores: 1, canjear: 1 };
+    if (isAdmin) {
+      if (guestViews[name]) name = name === 'suscripcion' ? 'suscriptores' : 'reservas';
+      if (!adminViews[name]) name = 'reservas';
+    } else {
+      if (!guestViews[name]) name = 'reservar';
+    }
+    state.view = name;
+    document.querySelectorAll('main.view').forEach(function (m) {
+      m.hidden = m.id !== 'view-' + name;
+    });
+    document.querySelectorAll('.tabbar button[data-view]').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-view') === name);
+    });
+    document.querySelectorAll('.admin-tabs button').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-view') === name ? 'true' : 'false');
+    });
+    window.scrollTo(0, 0);
+    if (push !== false) {
+      var url = location.pathname + location.search + '#' + name;
+      if (location.hash !== '#' + name) history.replaceState(null, '', url);
+    }
+    if (name === 'suscripcion') { renderPlans(); renderPass(); }
+    if (isAdmin) renderAdmin();
+  }
+
+  function onHash() {
+    var h = (location.hash || '').replace(/^#/, '');
+    if (h) setView(h, false);
+  }
+
+  function renderAll() {
+    document.getElementById('guest-count').textContent = String(state.guests);
+    renderSlots();
+    renderMap();
+    renderSelection();
+    renderPlans();
+    renderPass();
+    renderAdmin();
+  }
+
+  function initDefaults() {
+    var today = madridISODate();
+    var tomorrow = addDaysISO(today, 1);
+    var remaining = SLOTS.some(function (s) { return !slotPast(today, s); });
+    state.date = remaining ? today : tomorrow;
+    if (state.date === tomorrow) state.slot = '10:00';
+    else {
+      state.slot = SLOTS.filter(function (s) { return !slotPast(today, s); })[0] || '10:00';
+    }
+    var dateInput = document.getElementById('book-date');
+    dateInput.min = today;
+    dateInput.value = state.date;
+    var adminDate = document.getElementById('admin-date');
+    if (adminDate) { adminDate.value = state.date; adminDate.min = today; }
+  }
+
+  function bind() {
+    document.querySelectorAll('.lang button').forEach(function (b) {
+      b.addEventListener('click', function () { setLang(b.dataset.lang); });
+    });
+    document.getElementById('book-date').addEventListener('change', function () {
+      state.date = this.value;
+      if (slotPast(state.date, state.slot)) {
+        state.slot = SLOTS.filter(function (s) { return !slotPast(state.date, s); })[0] || state.slot;
+      }
+      state.table = null;
+      renderAll();
+    });
+    document.getElementById('guest-minus').addEventListener('click', function () {
+      state.guests = Math.max(1, state.guests - 1);
+      if (state.table && TABLE_BY_ID[state.table].cap < state.guests) state.table = null;
+      renderAll();
+    });
+    document.getElementById('guest-plus').addEventListener('click', function () {
+      state.guests = Math.min(8, state.guests + 1);
+      if (state.table && TABLE_BY_ID[state.table].cap < state.guests) state.table = null;
+      renderAll();
+    });
+    document.getElementById('hall-map').addEventListener('click', function (ev) {
+      var g = ev.target.closest('.tbl');
+      if (!g) return;
+      var id = g.getAttribute('data-id');
+      if (g.classList.contains('busy') || g.classList.contains('small')) return;
+      state.table = id;
+      renderMap();
+      document.querySelectorAll('.tbl[data-id="'+id+'"]').forEach(function (el) {
+        el.classList.remove('just-picked');
+        void el.getBoundingClientRect();
+        el.classList.add('just-picked');
+        setTimeout(function () { el.classList.remove('just-picked'); }, 420);
+      });
+      renderSelection();
+      document.getElementById('sel-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+    document.getElementById('hall-map').addEventListener('keydown', function (ev) {
+      if (ev.key !== 'Enter' && ev.key !== ' ') return;
+      var g = ev.target.closest('.tbl');
+      if (!g) return;
+      ev.preventDefault();
+      g.click();
+    });
+    document.getElementById('book-form').addEventListener('submit', confirmBooking);
+    document.querySelectorAll('.tabbar button[data-view]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.classList.contains('soon')) { setView('pedir'); return; }
+        setView(b.getAttribute('data-view'));
+      });
+    });
+    document.querySelectorAll('.admin-tabs button').forEach(function (b) {
+      b.addEventListener('click', function () { setView(b.getAttribute('data-view')); });
+    });
+    document.getElementById('checkout-open') && document.getElementById('checkout-open').addEventListener('click', function () {
+      if (!state.plan) { document.getElementById('plans').scrollIntoView({ behavior: 'smooth' }); return; }
+      openCheckout();
+    });
+    document.getElementById('sub-form').addEventListener('submit', confirmSub);
+    document.getElementById('checkout-cancel').addEventListener('click', closeCheckout);
+    document.getElementById('checkout-modal').addEventListener('click', function (e) {
+      if (e.target.id === 'checkout-modal') closeCheckout();
+    });
+    var adminDate = document.getElementById('admin-date');
+    if (adminDate) adminDate.addEventListener('change', function () {
+      state.date = this.value;
+      renderMap();
+      renderAdmin();
+    });
+    document.getElementById('redeem-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      redeemCode(document.getElementById('redeem-code').value);
+    });
+    document.getElementById('simulate-scan').addEventListener('click', function () {
+      var demo = subs()[0];
+      if (!demo) return;
+      document.getElementById('redeem-code').value = nextQrPayload(demo);
+    });
+    window.addEventListener('hashchange', onHash);
+  }
+
+  function registerPwa() {
+    if (!('serviceWorker' in navigator)) return;
+    if (!/^https?:$/.test(location.protocol)) return;
+    navigator.serviceWorker.register('./sw.js').catch(function () {});
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    seed();
+    lang = localStorage.getItem(LANG_KEY) || 'es';
+    if (!I18N[lang]) lang = 'es';
+    initDefaults();
+    document.body.classList.toggle('is-admin', isAdmin);
+    document.getElementById('admin-header').hidden = !isAdmin;
+    document.getElementById('guest-tabbar').hidden = isAdmin;
+    document.getElementById('admin-tabbar-space').hidden = !isAdmin;
+    bind();
+    applyI18n();
+    var initial = (location.hash || '').replace(/^#/, '') || (isAdmin ? 'reservas' : 'reservar');
+    setView(initial, false);
+    registerPwa();
+  });
+})();
+
+  </script>
+</body>
+</html>
