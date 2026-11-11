@@ -639,6 +639,287 @@ body.has-basket-fab { --basket-space: 88px; }
   .map-card svg { width: 100%; height: auto; display: block; }
 }
 
+/* Desktop / computer: full-viewport layout. Does not apply below 1024px. */
+@media (min-width: 1024px) {
+  html, body { height: 100%; }
+  body {
+    font-size: 18px;
+  }
+  .app-header { padding: 14px 28px; gap: 14px; }
+  .brand img { width: 44px; height: 44px; border-radius: 11px; }
+  .brand-name { font-size: 1.15rem; }
+  .brand-name small { font-size: .72rem; }
+  .lang button { padding: 8px 14px; font-size: 13px; }
+  .tabbar button { font-size: 12px; padding: 10px 8px 8px; gap: 4px; }
+  .tabbar button svg { width: 26px; height: 26px; }
+  main.view { max-width: 1080px; padding: 32px 40px 48px; }
+  .lead h1 { font-size: 3.4rem; }
+  .lead p { font-size: 1.15rem; max-width: 36em; }
+  .btn { padding: 16px 22px; font-size: 16px; }
+  .btn.small { padding: 10px 14px; font-size: 13px; }
+
+  body.is-desktop-booking,
+  body.is-desktop-subs {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(400px, 0.38fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  body.is-desktop-booking .app-header,
+  body.is-desktop-subs .app-header {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  body.is-desktop-booking .tabbar,
+  body.is-desktop-subs .tabbar {
+    position: relative;
+    left: auto; right: auto; bottom: auto;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    padding: 6px 12px;
+  }
+  body.is-desktop-booking .basket-fab,
+  body.is-desktop-booking #toast { display: none !important; }
+
+  body.is-desktop-booking #view-reservar {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: none;
+    margin: 0;
+    padding: 16px 18px 16px 24px;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  body.is-desktop-booking #view-reservar .hint-card,
+  body.is-desktop-booking #view-reservar .footer-note { display: none; }
+  body.is-desktop-booking #view-reservar .booking-bar {
+    flex: 0 0 auto;
+    position: relative;
+    top: auto;
+    padding: 0 0 12px;
+    margin: 0;
+    background: transparent;
+    border-bottom: 0;
+    display: grid;
+    grid-template-columns: minmax(180px, auto) minmax(0, 1fr);
+    grid-template-areas:
+      "lead lead"
+      "filters slots"
+      "legend legend";
+    gap: 6px 20px;
+    align-items: end;
+  }
+  body.is-desktop-booking #view-reservar .booking-bar .lead { grid-area: lead; margin: 0; }
+  body.is-desktop-booking #view-reservar .booking-bar .lead h1 { font-size: 1.7rem; margin: 0; }
+  body.is-desktop-booking #view-reservar .booking-bar .lead p { display: none; }
+  body.is-desktop-booking #view-reservar .booking-bar .filters {
+    grid-area: filters;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    gap: 8px 16px;
+  }
+  body.is-desktop-booking #view-reservar .slots-wrap { grid-area: slots; margin: 0; }
+  body.is-desktop-booking #view-reservar .slots { padding: 0; margin: 0; }
+  body.is-desktop-booking #view-reservar .legend { grid-area: legend; margin: 0; }
+  body.is-desktop-booking #view-reservar .map-card {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+  body.is-desktop-booking #view-reservar .map-caption {
+    font-size: 12px;
+    padding: 0 8px 10px;
+  }
+  body.is-desktop-booking #view-reservar .map-frame {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    position: relative;
+    aspect-ratio: auto;
+  }
+  body.is-desktop-booking #view-reservar .map-spin,
+  body.is-desktop-booking #view-reservar .map-zoom {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  body.is-desktop-booking #view-reservar .map-card svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  body.is-desktop-booking #hall-map .tbl .lbl,
+  body.is-desktop-booking #hall-map-admin .tbl .lbl {
+    font-size: 22px;
+    font-weight: 800;
+    paint-order: stroke fill;
+    stroke: #FFFBF4;
+    stroke-width: 4px;
+  }
+  body.is-desktop-booking #hall-map .tbl.selected .lbl,
+  body.is-desktop-booking #hall-map-admin .tbl.selected .lbl {
+    stroke: var(--picked);
+    fill: #FFFFFF;
+  }
+  body.is-desktop-booking #hall-map .tbl .badge,
+  body.is-desktop-booking #hall-map .tbl .check-mark,
+  body.is-desktop-booking #hall-map-admin .tbl .badge,
+  body.is-desktop-booking #hall-map-admin .tbl .check-mark { font-size: 14px; }
+  body.is-desktop-booking #hall-map text.upright,
+  body.is-desktop-booking #hall-map-admin text.upright { font-size: 16px; font-weight: 700; }
+
+  body.is-desktop-booking #view-datos {
+    grid-column: 2;
+    grid-row: 2;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--paper);
+    border-left: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+  }
+  body.is-desktop-booking #sidebar-main {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  body.is-desktop-booking #datos-back { display: none; }
+  body.is-desktop-booking #view-datos .booking-bar {
+    position: relative;
+    top: auto;
+    padding: 16px 28px 8px;
+    margin: 0;
+    background: transparent;
+    border-bottom: 1px solid var(--line);
+  }
+  body.is-desktop-booking #view-datos .lead { margin: 0 0 10px; }
+  body.is-desktop-booking #view-datos .lead h1 { font-size: 1.7rem; }
+  body.is-desktop-booking #view-datos .lead p { font-size: 0.95rem; }
+  body.is-desktop-booking #view-datos .filters {
+    grid-template-columns: 1fr auto;
+    gap: 8px 16px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+  body.is-desktop-booking label.field { font-size: 11px; }
+  body.is-desktop-booking label.field input,
+  body.is-desktop-booking label.field select { font-size: 18px; padding: 8px 0; }
+  body.is-desktop-booking .stepper button { width: 40px; height: 40px; font-size: 22px; }
+  body.is-desktop-booking .stepper output { font-size: 2rem; }
+  body.is-desktop-booking .slots { flex-wrap: wrap; overflow: visible; padding-bottom: 8px; }
+  body.is-desktop-booking .slots button { padding: 8px 14px; font-size: 14px; }
+  body.is-desktop-booking .legend { font-size: 12px; margin: 0 0 8px; }
+  body.is-desktop-booking #view-datos .lead#datos-lead,
+  body.is-desktop-booking #view-datos > .lead { padding: 14px 28px 0; margin-bottom: 6px; }
+  body.is-desktop-booking #view-datos > .lead h1 { font-size: 1.45rem; }
+  body.is-desktop-booking #datos-recap { margin: 0 28px 4px; }
+  body.is-desktop-booking #book-form {
+    padding: 4px 0 0;
+    border-top: 0;
+    margin: 0;
+  }
+  body.is-desktop-booking #book-form .form-fields { padding: 0 28px 12px; }
+  body.is-desktop-booking #book-form .row { margin-bottom: 8px; }
+  body.is-desktop-booking #book-note { min-height: 3.2em; height: 3.2em; }
+  body.is-desktop-booking .deposit-sticky {
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding: 12px 28px 16px;
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+  }
+  body.is-desktop-booking .deposit-note { margin: 0 0 8px; }
+  body.is-desktop-booking .deposit-sticky .redeem-msg { min-height: 0; margin: 0 0 8px; }
+  body.is-desktop-booking .form-card input,
+  body.is-desktop-booking .form-card textarea {
+    font-size: 17px;
+    padding: 12px 0;
+  }
+  body.is-desktop-booking .deposit-note {
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-text);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 8px 0 16px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  body.is-desktop-booking .recap h3 { font-size: 1.5rem; }
+  body.is-desktop-booking .recap p,
+  body.is-desktop-booking .recap-list li { font-size: 15px; }
+  body.is-desktop-booking .consent { font-size: 14px; line-height: 1.45; }
+
+  /* Subscription: plans on the left, checkout form always visible on the right. */
+  body.is-desktop-subs #view-suscripcion {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: none;
+    margin: 0;
+    padding: 24px 28px 24px 32px;
+    min-height: 0;
+    overflow: auto;
+  }
+  body.is-desktop-subs #plans {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  body.is-desktop-subs .plan {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 20px;
+    background: var(--paper);
+  }
+  body.is-desktop-subs .plan.selected {
+    border-color: var(--accent-text);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  body.is-desktop-subs .plan .price { font-size: 3rem; }
+  body.is-desktop-subs .plan h3 { font-size: 1.25rem; }
+  body.is-desktop-subs .plan p { font-size: 1.05rem; }
+  body.is-desktop-subs .example-note { font-size: 14px; padding: 12px 16px; }
+  body.is-desktop-subs #checkout-modal {
+    display: flex !important;
+    position: relative;
+    inset: auto;
+    grid-column: 2;
+    grid-row: 2;
+    background: transparent;
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+    z-index: 20;
+  }
+  body.is-desktop-subs #checkout-modal .sheet {
+    max-width: none;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: 0;
+    border-left: 1px solid var(--line);
+    box-shadow: none;
+    padding: 28px 28px 32px;
+    overflow: auto;
+  }
+  body.is-desktop-subs #checkout-title { font-size: 2rem !important; }
+  body.is-desktop-subs #checkout-cancel { display: none; }
+  body.is-desktop-subs .stripe-badge { font-size: 14px; }
+}
 
   </style>
 </head>
@@ -899,6 +1180,7 @@ body.has-basket-fab { --basket-space: 88px; }
   </main>
 
   <main id="view-datos" class="view" hidden>
+    <div class="sidebar-main" id="sidebar-main">
     <button type="button" class="back-link" id="datos-back" data-i18n="backToMap">Volver al plano</button>
     <div class="lead">
       <h1 data-i18n="yourDetails">Tus datos</h1>
@@ -906,6 +1188,7 @@ body.has-basket-fab { --basket-space: 88px; }
     </div>
     <div id="datos-recap" class="recap"></div>
     <form id="book-form" class="form-card" novalidate>
+      <div class="form-fields">
       <div class="row"><label for="book-name" data-i18n="name">Nombre</label><input id="book-name" name="name" autocomplete="name" required></div>
       <div class="row"><label for="book-phone" data-i18n="phone">Teléfono</label><input id="book-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required></div>
       <div class="row"><label for="book-email" data-i18n="email">Correo</label><input id="book-email" name="email" type="email" autocomplete="email" required></div>
@@ -914,13 +1197,17 @@ body.has-basket-fab { --basket-space: 88px; }
         <input id="book-privacy" name="privacy" type="checkbox" required>
         <span data-i18n="privacy">Acepto la política de privacidad y el uso de mis datos para gestionar esta reserva.</span>
       </label>
+      </div>
+    </form>
+    </div>
+    <div class="deposit-sticky">
       <div class="deposit-note" id="deposit-note">
         <strong data-i18n="depositTitle">Señal de 5 €</strong>
         <p data-i18n="depositNote" style="margin:6px 0 0;">La señal es de 5 € por reserva (no por mesa). Esta cantidad se descuenta de tu consumición en Vellia Cafeteria.</p>
       </div>
       <p id="book-err" class="redeem-msg err"></p>
-      <button class="btn" type="submit" data-i18n="confirm">Pagar 5 € y reservar</button>
-    </form>
+      <button class="btn" type="submit" form="book-form" data-i18n="confirm">Pagar 5 € y reservar</button>
+    </div>
   </main>
 
   <main id="view-confirmacion" class="view" hidden>
@@ -1006,10 +1293,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   'use strict';
 
   var PENDING_KEY = 'vellia-cafeteria-pending-v1';
-  /* Live Payment Link is created in Stripe (product metadata business=vellia-cafeteria).
-     Filled once the catalog objects exist; leave empty to block redirect. */
+  /* Live Payment Link: product/price/link metadata business=cafeteria (not laundry). */
   var STRIPE_PAY = {
-    paymentLink: '',
+    paymentLink: 'https://book.stripe.com/7sY8wP54EfMJ2oiaAvgEg03',
     amountCents: 500,
     currency: 'EUR',
     successOrigin: 'https://verkvest.github.io/vellia-cafeteria-test/'
@@ -1683,7 +1969,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var copy = document.getElementById('basket-copy');
     var go = document.getElementById('basket-go');
     if (!fab) return;
-    var show = !isAdmin && state.view === 'reservar';
+    var show = !isAdmin && state.view === 'reservar' && !isDesktopLayout();
     fab.hidden = !show;
     document.body.classList.toggle('has-basket-fab', show);
     var n = state.tables.length;
@@ -1762,6 +2048,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       return;
     }
     closeBasket();
+    if (isDesktopLayout() && !isAdmin) {
+      setView('reservar');
+      var nameInput = document.getElementById('book-name');
+      if (nameInput) nameInput.focus();
+      return;
+    }
     setView('datos');
   }
 
@@ -1853,6 +2145,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   function flyTableToBasket(g, id) {
     showToast(t('addedToast', { id: id }));
     updateBasketFab();
+    if (isDesktopLayout()) return;
     var target = document.getElementById('basket-target');
     var from = tableAnchor(g);
     var to = target ? target.getBoundingClientRect() : null;
@@ -1861,6 +2154,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
   function flyBasketToTable(g, id) {
     showToast(t('removedToast', { id: id }));
+    if (isDesktopLayout()) return;
     var target = document.getElementById('basket-target');
     var to = tableAnchor(g);
     var from = target ? target.getBoundingClientRect() : null;
@@ -2043,7 +2337,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   function openCheckout() { document.getElementById('checkout-modal').hidden = false; }
-  function closeCheckout() { document.getElementById('checkout-modal').hidden = true; }
+  function closeCheckout() {
+    if (document.body.classList.contains('is-desktop-subs')) return;
+    document.getElementById('checkout-modal').hidden = true;
+  }
 
   function confirmSub(ev) {
     ev.preventDefault();
@@ -2159,6 +2456,21 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     }).join('') || '<li class="muted">—</li>';
   }
 
+  function isDesktopLayout() {
+    return window.matchMedia && window.matchMedia('(min-width: 1024px)').matches;
+  }
+  function syncDesktopDom() {
+    var bar = document.getElementById('booking-bar');
+    var reservar = document.getElementById('view-reservar');
+    var datos = document.getElementById('view-datos');
+    if (bar && reservar && bar.parentElement !== reservar) {
+      reservar.insertBefore(bar, reservar.firstChild);
+    }
+    var checkout = document.getElementById('checkout-modal');
+    if (checkout) {
+      if (document.body.classList.contains('is-desktop-subs')) checkout.hidden = false;
+    }
+  }
   function setView(name, push) {
     var guestViews = { reservar: 1, suscripcion: 1, pedir: 1, datos: 1, confirmacion: 1 };
     var adminViews = { reservas: 1, suscriptores: 1, canjear: 1 };
@@ -2168,11 +2480,21 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     } else {
       if (!guestViews[name]) name = 'reservar';
       if (name === 'datos' && !state.tables.length) name = 'reservar';
+      if (isDesktopLayout() && name === 'datos') name = 'reservar';
     }
     state.view = name;
+    var desktopBooking = !isAdmin && isDesktopLayout() && name === 'reservar';
+    var desktopSubs = !isAdmin && isDesktopLayout() && name === 'suscripcion';
+    document.body.classList.toggle('is-desktop-booking', desktopBooking);
+    document.body.classList.toggle('is-desktop-subs', desktopSubs);
     document.querySelectorAll('main.view').forEach(function (m) {
-      m.hidden = m.id !== 'view-' + name;
+      if (desktopBooking && (m.id === 'view-reservar' || m.id === 'view-datos')) {
+        m.hidden = false;
+      } else {
+        m.hidden = m.id !== 'view-' + name;
+      }
     });
+    syncDesktopDom();
     document.querySelectorAll('.tabbar button[data-view]').forEach(function (b) {
       var tab = b.getAttribute('data-view');
       var onReserveFlow = (name === 'reservar' || name === 'datos' || name === 'confirmacion');
@@ -2181,13 +2503,15 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     document.querySelectorAll('.admin-tabs button').forEach(function (b) {
       b.setAttribute('aria-pressed', b.getAttribute('data-view') === name ? 'true' : 'false');
     });
-    window.scrollTo(0, 0);
+    if (!(document.body.classList.contains('is-desktop-booking') || document.body.classList.contains('is-desktop-subs'))) {
+      window.scrollTo(0, 0);
+    }
     if (push !== false) {
       var url = location.pathname + location.search + '#' + name;
       if (location.hash !== '#' + name) history.replaceState(null, '', url);
     }
     if (name === 'suscripcion') { renderPlans(); renderPass(); }
-    if (name === 'datos') renderSelection();
+    if (name === 'datos' || document.body.classList.contains('is-desktop-booking')) renderSelection();
     if (name !== 'reservar') closeBasket();
     updateBasketFab();
     if (isAdmin) renderAdmin();
@@ -2339,6 +2663,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       document.getElementById('redeem-code').value = nextQrPayload(demo);
     });
     window.addEventListener('hashchange', onHash);
+    if (window.matchMedia) {
+      var mq = window.matchMedia('(min-width: 1024px)');
+      var onMq = function () { setView(state.view || 'reservar', false); };
+      if (mq.addEventListener) mq.addEventListener('change', onMq);
+      else if (mq.addListener) mq.addListener(onMq);
+    }
   }
 
 
