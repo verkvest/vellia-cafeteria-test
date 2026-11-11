@@ -393,6 +393,29 @@ body.has-basket-fab { padding-bottom: calc(var(--tabbar-h) + 88px); }
   white-space: nowrap;
 }
 .sr-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+.deposit-note {
+  margin: 4px 0 16px;
+  padding: 12px 14px;
+  background: #FFF4F8;
+  border: 1px solid #F3C4D8;
+  border-radius: 14px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.deposit-note strong { color: var(--picked); font-weight: 800; }
+.paid-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #FFF4F8;
+  border: 1px solid #E0418A;
+  color: var(--picked);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
 .form-card label.consent, label.consent, .consent {
   display: flex; gap: 10px; align-items: flex-start;
   font-size: 13px; color: var(--ink); line-height: 1.45;
@@ -891,8 +914,12 @@ body.has-basket-fab { --basket-space: 88px; }
         <input id="book-privacy" name="privacy" type="checkbox" required>
         <span data-i18n="privacy">Acepto la política de privacidad y el uso de mis datos para gestionar esta reserva.</span>
       </label>
+      <div class="deposit-note" id="deposit-note">
+        <strong data-i18n="depositTitle">Señal de 5 €</strong>
+        <p data-i18n="depositNote" style="margin:6px 0 0;">La señal es de 5 € por reserva (no por mesa). Esta cantidad se descuenta de tu consumición en Vellia Cafeteria.</p>
+      </div>
       <p id="book-err" class="redeem-msg err"></p>
-      <button class="btn" type="submit" data-i18n="confirm">Confirmar reserva</button>
+      <button class="btn" type="submit" data-i18n="confirm">Pagar 5 € y reservar</button>
     </form>
   </main>
 
@@ -978,6 +1005,15 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 (function () {
   'use strict';
 
+  var PENDING_KEY = 'vellia-cafeteria-pending-v1';
+  /* Live Payment Link is created in Stripe (product metadata business=vellia-cafeteria).
+     Filled once the catalog objects exist; leave empty to block redirect. */
+  var STRIPE_PAY = {
+    paymentLink: '',
+    amountCents: 500,
+    currency: 'EUR',
+    successOrigin: 'https://verkvest.github.io/vellia-cafeteria-test/'
+  };
   var BOOK_KEY = 'vellia-cafeteria-bookings-v2';
   var SUB_KEY = 'vellia-cafeteria-subs-v2';
   var REDEEM_KEY = 'vellia-cafeteria-redeems-v2';
@@ -1037,7 +1073,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       name: 'Nombre',
       email: 'Correo',
       phone: 'Teléfono',
-      confirm: 'Confirmar reserva',
+      confirm: 'Pagar 5 € y reservar',
       booked: 'Reserva confirmada',
       bookedBody: 'Mesa {id}, {date} a las {slot}, {guests}. En la versión final recibirá un correo con Apple Wallet y Google Wallet.',
       tabReserve: 'Reservar mesa',
@@ -1096,10 +1132,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       mapCartHint: 'Toca mesas libres para añadirlas a Mi reserva. Vuelve a tocar para quitarlas.',
       note: 'Nota (opcional)',
       privacy: 'Acepto la política de privacidad y el uso de mis datos para gestionar esta reserva.',
+      depositTitle: 'Señal de 5 €',
+      depositNote: 'La señal es de 5 € por reserva (no por mesa). Esta cantidad se descuenta de tu consumición en Vellia Cafeteria.',
+      depositPaid: 'Pagado: 5 €. Se descuenta de tu consumición en el local.',
+      adminPaid: 'pagado 5 €',
+      payMissing: 'El pago aún no está configurado. Inténtalo más tarde.',
+      tableTakenPaid: 'El pago se recibió, pero alguna mesa ya no está libre. Contacta con el café.',
       needPrivacy: 'Debes aceptar la política de privacidad.',
       needEmail: 'Introduce un correo válido.',
       needPhone: 'Introduce un teléfono válido.',
-      detailsLead: 'Completa tus datos para confirmar la reserva.',
+      detailsLead: 'Completa tus datos y paga la señal de 5 € para reservar.',
       backToMap: 'Volver al plano',
       newBooking: 'Nueva reserva',
       addedLive: 'Mesa {id} añadida a tu reserva.',
@@ -1142,7 +1184,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       name: 'Name',
       email: 'Email',
       phone: 'Phone',
-      confirm: 'Confirm booking',
+      confirm: 'Pay €5 and book',
       booked: 'Booking confirmed',
       bookedBody: 'Table {id}, {date} at {slot}, {guests}. In the final version you will get an email with Apple Wallet and Google Wallet.',
       tabReserve: 'Book a table',
@@ -1201,10 +1243,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       mapCartHint: 'Tap free tables to add them to My booking. Tap again to remove them.',
       note: 'Note (optional)',
       privacy: 'I accept the privacy policy and the use of my data to manage this booking.',
+      depositTitle: '€5 deposit',
+      depositNote: 'The deposit is €5 per booking (not per table). It is credited towards your order at Vellia Cafeteria.',
+      depositPaid: 'Paid: €5. This amount is credited towards your order.',
+      adminPaid: 'paid €5',
+      payMissing: 'Payment is not set up yet. Please try again later.',
+      tableTakenPaid: 'Payment was received, but a table is no longer free. Please contact the café.',
       needPrivacy: 'Please accept the privacy policy.',
       needEmail: 'Please enter a valid email address.',
       needPhone: 'Please enter a valid phone number.',
-      detailsLead: 'Fill in your details to confirm the booking.',
+      detailsLead: 'Fill in your details and pay the €5 deposit to book.',
       backToMap: 'Back to the plan',
       newBooking: 'New booking',
       addedLive: 'Table {id} added to your booking.',
@@ -1247,7 +1295,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       name: 'Имя',
       email: 'Эл. почта',
       phone: 'Телефон',
-      confirm: 'Подтвердить бронь',
+      confirm: 'Оплатить 5 € и забронировать',
       booked: 'Бронь подтверждена',
       bookedBody: 'Стол {id}, {date} в {slot}, {guests}. В финальной версии вы получите письмо с Apple Wallet и Google Wallet.',
       tabReserve: 'Бронь стола',
@@ -1306,10 +1354,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       mapCartHint: 'Нажимайте свободные столы, чтобы добавить их в «Моя бронь». Нажмите ещё раз, чтобы убрать.',
       note: 'Комментарий (необязательно)',
       privacy: 'Я принимаю политику конфиденциальности и обработку моих данных для этой брони.',
+      depositTitle: 'Залог 5 €',
+      depositNote: 'Залог — 5 € за бронь (не за каждый стол). Эту сумму засчитают в счёт заказа в Vellia Cafeteria.',
+      depositPaid: 'Оплачено: 5 €. Сумма засчитывается в счёт заказа в кафе.',
+      adminPaid: 'pagado 5 €',
+      payMissing: 'Оплата пока не настроена. Попробуйте позже.',
+      tableTakenPaid: 'Оплата прошла, но один из столов уже занят. Свяжитесь с кафе.',
       needPrivacy: 'Нужно принять политику конфиденциальности.',
       needEmail: 'Укажите корректный адрес почты.',
       needPhone: 'Укажите корректный телефон.',
-      detailsLead: 'Заполните данные, чтобы подтвердить бронь.',
+      detailsLead: 'Заполните данные и оплатите залог 5 €, чтобы забронировать стол.',
       backToMap: 'К плану зала',
       newBooking: 'Новая бронь',
       addedLive: 'Стол {id} добавлен в бронь.',
@@ -1486,9 +1540,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     if (b && b.tables && b.tables.length) return b.tables.slice();
     return b && b.table ? [b.table] : [];
   }
+  function isPaidBooking(b) {
+    return !b || b.paid !== false;
+  }
   function isOccupied(tableId, date, slot) {
     return bookings().some(function (b) {
-      return b.date === date && b.slot === slot && bookingTables(b).indexOf(tableId) !== -1;
+      return isPaidBooking(b) && b.date === date && b.slot === slot && bookingTables(b).indexOf(tableId) !== -1;
     });
   }
   function shortDate(iso) {
@@ -1819,6 +1876,34 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     return d.length >= 8 && d.length <= 15;
   }
 
+  function fillConfirmHero(booking) {
+    var hero = document.getElementById('confirm-hero');
+    if (!hero || !booking) return;
+    var bookedTables = bookingTables(booking);
+    var ids = bookedTables.join(', ');
+    var bodyKey = bookedTables.length > 1 ? 'bookedBodyMulti' : 'bookedBody';
+    var rows = bookedTables.map(function (id) {
+      var meta = TABLE_BY_ID[id];
+      return '<li><b>' + t('selected', { id: id }) + '</b> <span>' +
+        (meta ? t(zoneKey(meta.zone)) + ' · ' + countText('seats', meta.cap) : '') + '</span></li>';
+    }).join('');
+    hero.innerHTML = '<div class="confirm-mark" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.2 17 19 7"/></svg></div>' +
+      '<h1>' + t('booked') + '</h1>' +
+      '<p class="paid-badge">' + t('depositPaid') + '</p>' +
+      '<div class="recap">' + '<h3>' + tablesPhrase(bookedTables.length) + '</h3>' +
+      '<p>' + t(bodyKey, { id: bookedTables[0], ids: ids, date: fmtDate(booking.date), slot: booking.slot, guests: guestsLabel(booking.guests) }) + '</p>' +
+      '<ul class="recap-list">' + rows + '</ul>' +
+      (booking.note ? '<p class="muted">' + escapeHtml(booking.note) + '</p>' : '') +
+      '</div>';
+  }
+  function paymentLinkUrl(pending) {
+    var base = (STRIPE_PAY && STRIPE_PAY.paymentLink) || '';
+    if (!base) return '';
+    var url = base + (base.indexOf('?') >= 0 ? '&' : '?');
+    url += 'client_reference_id=' + encodeURIComponent(pending.id);
+    if (pending.email) url += '&prefilled_email=' + encodeURIComponent(pending.email);
+    return url;
+  }
   function confirmBooking(ev) {
     ev.preventDefault();
     var name = document.getElementById('book-name').value.trim();
@@ -1836,38 +1921,53 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     if (!validEmail(email)) { err.textContent = t('needEmail'); return; }
     if (!validPhone(phone)) { err.textContent = t('needPhone'); return; }
     if (!privacyEl || !privacyEl.checked) { err.textContent = t('needPrivacy'); return; }
-    var bookedTables = state.tables.slice();
-    var bookedDate = state.date;
-    var bookedSlot = state.slot;
-    var bookedGuests = state.guests;
-    var list = bookings();
-    list.push({
-      id: uid('bk'), tables: bookedTables, table: bookedTables[0], date: bookedDate, slot: bookedSlot,
-      guests: bookedGuests, name: name, email: email, phone: phone, note: note,
+    var pending = {
+      id: uid('bk'), tables: state.tables.slice(), table: state.tables[0],
+      date: state.date, slot: state.slot, guests: state.guests,
+      name: name, email: email, phone: phone, note: note,
+      paid: false, depositCents: 500, depositCurrency: 'EUR',
       created: madridISODate() + ' ' + madridHM()
+    };
+    var payUrl = paymentLinkUrl(pending);
+    if (!payUrl) { err.textContent = t('payMissing'); return; }
+    save(PENDING_KEY, pending);
+    window.location.href = payUrl;
+  }
+  function consumePaymentReturn() {
+    var q = new URLSearchParams(location.search);
+    var flag = q.get('booking');
+    if (flag !== 'success') return;
+    var sessionId = q.get('session_id') || '';
+    try {
+      history.replaceState({}, '', location.pathname + location.hash);
+    } catch (e) {}
+    var pending = load(PENDING_KEY, null);
+    if (!pending || !pending.tables || !pending.tables.length) return;
+    var blocked = pending.tables.some(function (id) {
+      return isOccupied(id, pending.date, pending.slot);
     });
-    save(BOOK_KEY, list);
+    if (blocked) {
+      try { localStorage.removeItem(PENDING_KEY); } catch (e2) {}
+      var hero = document.getElementById('confirm-hero');
+      if (hero) hero.innerHTML = '<h1>' + t('booked') + '</h1><p>' + t('tableTakenPaid') + '</p>';
+      setView('confirmacion');
+      return;
+    }
+    pending.paid = true;
+    pending.paidAmount = 5;
+    pending.paidCurrency = 'EUR';
+    pending.stripeSession = sessionId;
+    var list = bookings();
+    var exists = list.some(function (b) { return b.id === pending.id; });
+    if (!exists) {
+      list.push(pending);
+      save(BOOK_KEY, list);
+    }
+    try { localStorage.removeItem(PENDING_KEY); } catch (e3) {}
     state.tables = [];
-    ev.target.reset();
+    fillConfirmHero(pending);
     renderMap();
     renderSelection();
-    var hero = document.getElementById('confirm-hero');
-    if (hero) {
-      var ids = bookedTables.join(', ');
-      var bodyKey = bookedTables.length > 1 ? 'bookedBodyMulti' : 'bookedBody';
-      var rows = bookedTables.map(function (id) {
-        var meta = TABLE_BY_ID[id];
-        return '<li><b>' + t('selected', { id: id }) + '</b> <span>' +
-          (meta ? t(zoneKey(meta.zone)) + ' · ' + countText('seats', meta.cap) : '') + '</span></li>';
-      }).join('');
-      hero.innerHTML = '<div class="confirm-mark" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.2 17 19 7"/></svg></div>' +
-        '<h1>' + t('booked') + '</h1>' +
-        '<div class="recap">' + '<h3>' + tablesPhrase(bookedTables.length) + '</h3>' +
-        '<p>' + t(bodyKey, { id: bookedTables[0], ids: ids, date: fmtDate(bookedDate), slot: bookedSlot, guests: guestsLabel(bookedGuests) }) + '</p>' +
-        '<ul class="recap-list">' + rows + '</ul>' +
-        (note ? '<p class="muted">' + escapeHtml(note) + '</p>' : '') +
-        '</div>';
-    }
     setView('confirmacion');
   }
 
@@ -2036,7 +2136,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       listEl.innerHTML = items.map(function (b) {
         var ids = bookingTables(b);
         var seats = ids.reduce(function (s, id) { return s + ((TABLE_BY_ID[id] && TABLE_BY_ID[id].cap) || 0); }, 0);
-        return '<li><b>' + escapeHtml(b.name || '') + '</b>' +
+        var paid = b.paid === true
+          ? '<div class="paid-badge">' + t('adminPaid') + '</div>'
+          : '';
+        return '<li><b>' + escapeHtml(b.name || '') + '</b>' + paid +
           '<div class="muted">' + b.slot + ' · ' + ids.join(', ') + ' · ' +
           guestsLabel(b.guests) + ' · ' + countText('totalSeats', seats) + ' · ' + escapeHtml(b.phone || '') + '</div>' +
           (b.note ? '<div class="muted">' + escapeHtml(b.note) + '</div>' : '') +
@@ -2315,6 +2418,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     applyI18n();
     var initial = (location.hash || '').replace(/^#/, '') || (isAdmin ? 'reservas' : 'reservar');
     setView(initial, false);
+    consumePaymentReturn();
     registerPwa();
   });
 })();
