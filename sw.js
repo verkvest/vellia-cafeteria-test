@@ -1,5 +1,5 @@
 /* Vellia Cafeteria — service worker (prototype cache) */
-const CACHE = 'vellia-cafeteria-v10';
+const CACHE = 'vellia-cafeteria-v11';
 const ASSETS = [
   './',
   './index.html',

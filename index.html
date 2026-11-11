@@ -1111,7 +1111,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       tables1: '1 mesa',
       seatsMax: '{n} personas máx',
       totalSeats: 'Plazas en total: {n}',
-      needMoreSeats: 'Hay {seats} plazas y {guests}. Añade otra mesa para continuar.',
+      needMoreSeats: 'Hay {seats} y {guests}. Añade otra mesa para continuar.',
       droppedTables: 'Se han quitado las mesas no disponibles: {ids}.',
       bookedBodyMulti: 'Mesas {ids}, {date} a las {slot}, {guests}. En la versión final recibirá un correo con Apple Wallet y Google Wallet.'
     },
@@ -1216,7 +1216,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       tables1: '1 table',
       seatsMax: 'up to {n} seats',
       totalSeats: 'Total seats: {n}',
-      needMoreSeats: 'There are {seats} seats and {guests}. Add another table to continue.',
+      needMoreSeats: 'There are {seats} and {guests}. Add another table to continue.',
       droppedTables: 'Unavailable tables were removed: {ids}.',
       bookedBodyMulti: 'Tables {ids}, {date} at {slot}, {guests}. In the final version you will get an email with Apple Wallet and Google Wallet.'
     },
@@ -1321,7 +1321,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       tables1: '1 стол',
       seatsMax: 'до {n} мест',
       totalSeats: 'Всего мест: {n}',
-      needMoreSeats: 'Есть {seats} мест и {guests}. Добавьте ещё стол, чтобы продолжить.',
+      needMoreSeats: 'Есть {seats} и {guests}. Добавьте ещё стол, чтобы продолжить.',
       droppedTables: 'Недоступные столы убраны: {ids}.',
       bookedBodyMulti: 'Столы {ids}, {date} в {slot}, {guests}. В финальной версии вы получите письмо с Apple Wallet и Google Wallet.'
     }
@@ -1337,6 +1337,64 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     plan: null,
     view: 'reservar'
   };
+
+
+  var COUNT = {
+    seats: {
+      es: { one: '{n} plaza', other: '{n} plazas' },
+      en: { one: '{n} seat', other: '{n} seats' },
+      ru: { one: '{n} место', few: '{n} места', many: '{n} мест', other: '{n} мест' }
+    },
+    tables: {
+      es: { one: '{n} mesa', other: '{n} mesas' },
+      en: { one: '{n} table', other: '{n} tables' },
+      ru: { one: '{n} стол', few: '{n} стола', many: '{n} столов', other: '{n} столов' }
+    },
+    guests: {
+      es: { one: '{n} persona', other: '{n} personas' },
+      en: { one: '{n} guest', other: '{n} guests' },
+      ru: { one: '{n} гость', few: '{n} гостя', many: '{n} гостей', other: '{n} гостей' }
+    },
+    seatsMax: {
+      es: { one: '{n} persona máx', other: '{n} personas máx' },
+      en: { one: 'up to {n} seat', other: 'up to {n} seats' },
+      ru: { one: 'до {n} места', few: 'до {n} мест', many: 'до {n} мест', other: 'до {n} мест' }
+    },
+    totalSeats: {
+      es: { one: 'En total: {n} plaza', other: 'En total: {n} plazas' },
+      en: { one: 'Total: {n} seat', other: 'Total: {n} seats' },
+      ru: { one: 'Всего: {n} место', few: 'Всего: {n} места', many: 'Всего: {n} мест', other: 'Всего: {n} мест' }
+    },
+    capacity: {
+      es: { one: 'Hasta {n} persona', other: 'Hasta {n} personas' },
+      en: { one: 'Up to {n} guest', other: 'Up to {n} guests' },
+      ru: { one: 'До {n} гостя', few: 'До {n} гостей', many: 'До {n} гостей', other: 'До {n} гостей' }
+    }
+  };
+  function pluralCat(n) {
+    n = Math.abs(parseInt(n, 10) || 0);
+    var loc = lang === 'ru' ? 'ru' : (lang === 'en' ? 'en' : 'es');
+    try {
+      return new Intl.PluralRules(loc).select(n);
+    } catch (e) {
+      if (loc === 'ru') {
+        var n10 = n % 10, n100 = n % 100;
+        if (n100 >= 11 && n100 <= 14) return 'many';
+        if (n10 === 1) return 'one';
+        if (n10 >= 2 && n10 <= 4) return 'few';
+        return 'many';
+      }
+      return n === 1 ? 'one' : 'other';
+    }
+  }
+  function countText(kind, n) {
+    n = Math.abs(parseInt(n, 10) || 0);
+    var loc = lang === 'ru' ? 'ru' : (lang === 'en' ? 'en' : 'es');
+    var forms = (COUNT[kind] && COUNT[kind][loc]) || (COUNT[kind] && COUNT[kind].es) || {};
+    var cat = pluralCat(n);
+    var s = forms[cat] || forms.other || forms.many || String(n);
+    return String(s).replace(/\{n\}/g, String(n));
+  }
 
   function t(key, vars) {
     var dict = I18N[lang] || I18N.es;
@@ -1379,12 +1437,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     }
     return p[2] + '.' + p[1] + '.' + p[0];
   }
-  function guestsLabel(n) {
-    return n === 1 ? t('guests1') : t('guestsN', { n: n });
-  }
-  function capLabel(n) {
-    return n === 1 ? t('capacity1') : t('capacity', { n: n });
-  }
+  function guestsLabel(n) { return countText('guests', n); }
+  function capLabel(n) { return countText('capacity', n); }
   function load(key, fallback) {
     try {
       var raw = localStorage.getItem(key);
@@ -1451,9 +1505,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   function escapeHtml(s) {
     return String(s).replace(/[<>&]/g, function (c) { return ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]); });
   }
-  function tablesPhrase(n) {
-    return n === 1 ? t('tables1') : t('tablesN', { n: n });
-  }
+  function tablesPhrase(n) { return countText('tables', n); }
   function slotPast(date, slot) {
     var today = madridISODate();
     if (date < today) return true;
@@ -1559,13 +1611,13 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var rows = state.tables.map(function (id) {
       var meta = TABLE_BY_ID[id];
       return '<li><b>' + t('selected', { id: id }) + '</b> <span>' +
-        (meta ? t(zoneKey(meta.zone)) + ' · ' + t('seatsN', { n: meta.cap }) : '') + '</span></li>';
+        (meta ? t(zoneKey(meta.zone)) + ' · ' + countText('seats', meta.cap) : '') + '</span></li>';
     }).join('');
     return '<h3>' + tablesPhrase(state.tables.length) + '</h3>' +
       '<p>' + fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests) + '</p>' +
-      '<p>' + t('totalSeats', { n: totalSeats() }) + '</p>' +
+      '<p>' + countText('totalSeats', totalSeats()) + '</p>' +
       '<ul class="recap-list">' + rows + '</ul>' +
-      (seatsOk() ? '' : '<p class="seats-hint">' + t('needMoreSeats', { seats: totalSeats(), guests: guestsLabel(state.guests) }) + '</p>');
+      (seatsOk() ? '' : '<p class="seats-hint">' + t('needMoreSeats', { seats: countText('seats', totalSeats()), guests: guestsLabel(state.guests) }) + '</p>');
   }
 
   function updateBasketFab() {
@@ -1586,7 +1638,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     if (copy) {
       if (has) {
         copy.innerHTML = '<b>' + tablesPhrase(n) + '</b><span>' +
-          t('seatsMax', { n: totalSeats() }) + ' · ' + shortDate(state.date) + ' ' + state.slot + '</span>';
+          countText('seatsMax', totalSeats()) + ' · ' + shortDate(state.date) + ' ' + state.slot + '</span>';
       } else {
         copy.innerHTML = '';
       }
@@ -1609,15 +1661,15 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     var metaLine = fmtDate(state.date) + ' · ' + state.slot + ' · ' + guestsLabel(state.guests);
     var rows = state.tables.map(function (id) {
       var meta = TABLE_BY_ID[id];
-      var sub = meta ? (t(zoneKey(meta.zone)) + ' · ' + t('seatsN', { n: meta.cap })) : '';
+      var sub = meta ? (t(zoneKey(meta.zone)) + ' · ' + countText('seats', meta.cap)) : '';
       return '<li class="basket-row" data-id="' + id + '">' +
         '<div class="row-text"><b>' + t('selected', { id: id }) + '</b><span class="row-sub">' + sub + '</span></div>' +
         '<button type="button" class="row-remove" data-remove="' + id + '" aria-label="' + t('removeTable') + ' ' + id + '">×</button>' +
         '</li>';
     }).join('');
-    var hint = seatsOk() ? '' : '<p class="seats-hint">' + t('needMoreSeats', { seats: totalSeats(), guests: guestsLabel(state.guests) }) + '</p>';
+    var hint = seatsOk() ? '' : '<p class="seats-hint">' + t('needMoreSeats', { seats: countText('seats', totalSeats()), guests: guestsLabel(state.guests) }) + '</p>';
     body.innerHTML = '<div class="basket-meta"><b>' + tablesPhrase(state.tables.length) + '</b>' +
-      '<div>' + metaLine + '</div><div class="muted">' + t('totalSeats', { n: totalSeats() }) + '</div></div>' +
+      '<div>' + metaLine + '</div><div class="muted">' + countText('totalSeats', totalSeats()) + '</div></div>' +
       '<ul class="basket-list">' + rows + '</ul>' + hint;
     if (cont) cont.disabled = !seatsOk();
   }
@@ -1779,7 +1831,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     err.textContent = '';
     pruneBasket(true);
     if (!state.tables.length || !state.date || !state.slot) { err.textContent = t('needTable'); return; }
-    if (!seatsOk()) { err.textContent = t('needMoreSeats', { seats: totalSeats(), guests: guestsLabel(state.guests) }); return; }
+    if (!seatsOk()) { err.textContent = t('needMoreSeats', { seats: countText('seats', totalSeats()), guests: guestsLabel(state.guests) }); return; }
     if (!name || !email || !phone) { err.textContent = t('needFields'); return; }
     if (!validEmail(email)) { err.textContent = t('needEmail'); return; }
     if (!validPhone(phone)) { err.textContent = t('needPhone'); return; }
@@ -1806,7 +1858,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       var rows = bookedTables.map(function (id) {
         var meta = TABLE_BY_ID[id];
         return '<li><b>' + t('selected', { id: id }) + '</b> <span>' +
-          (meta ? t(zoneKey(meta.zone)) + ' · ' + t('seatsN', { n: meta.cap }) : '') + '</span></li>';
+          (meta ? t(zoneKey(meta.zone)) + ' · ' + countText('seats', meta.cap) : '') + '</span></li>';
       }).join('');
       hero.innerHTML = '<div class="confirm-mark" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.2 17 19 7"/></svg></div>' +
         '<h1>' + t('booked') + '</h1>' +
@@ -1986,7 +2038,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         var seats = ids.reduce(function (s, id) { return s + ((TABLE_BY_ID[id] && TABLE_BY_ID[id].cap) || 0); }, 0);
         return '<li><b>' + escapeHtml(b.name || '') + '</b>' +
           '<div class="muted">' + b.slot + ' · ' + ids.join(', ') + ' · ' +
-          b.guests + ' ' + t('people') + ' · ' + t('totalSeats', { n: seats }) + ' · ' + escapeHtml(b.phone || '') + '</div>' +
+          guestsLabel(b.guests) + ' · ' + countText('totalSeats', seats) + ' · ' + escapeHtml(b.phone || '') + '</div>' +
           (b.note ? '<div class="muted">' + escapeHtml(b.note) + '</div>' : '') +
           '</li>';
       }).join('');
